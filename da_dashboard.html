@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DA Mastery — Learning Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0a0b0f; --bg2:#0f111a; --surface:#141720; --surface2:#1a1e2e;
+  --border:rgba(255,255,255,0.07); --border2:rgba(255,255,255,0.13);
+  --text:#e8eaf2; --muted:#8890a8; --muted2:#5c6480;
+  --violet:#7c3aed; --violet2:#9d5ffa; --violet3:#c4a3ff;
+  --blue:#2563eb; --blue2:#60a5fa;
+  --green:#10b981; --green2:#34d399;
+  --amber:#f59e0b; --red:#ef4444;
+  --glass:rgba(255,255,255,0.04); --glass2:rgba(255,255,255,0.07);
+  --font-body:'Space Grotesk',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+  --font-head:'Syne',sans-serif;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-height:100vh;overflow-x:hidden;line-height:1.6;}
+body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 40% at 10% 0%,rgba(124,58,237,.07) 0%,transparent 60%),radial-gradient(ellipse 40% 30% at 90% 100%,rgba(37,99,235,.05) 0%,transparent 60%);pointer-events:none;z-index:0;}
+
+/* LAYOUT */
+.shell{display:grid;grid-template-columns:250px 1fr;grid-template-rows:54px 1fr;min-height:100vh;position:relative;z-index:1;}
+
+/* TOPBAR */
+.topbar{grid-column:1/-1;background:rgba(10,11,15,.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;padding:0 22px;position:sticky;top:0;z-index:100;}
+.logo{font-family:var(--font-head);font-size:15px;font-weight:800;letter-spacing:.04em;background:linear-gradient(135deg,var(--violet2),var(--blue2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.logo-sep{color:var(--green);-webkit-text-fill-color:var(--green);font-weight:800;}
+.topbar-meta{font-family:var(--font-mono);font-size:10px;color:var(--muted2);border-left:1px solid var(--border);padding-left:14px;margin-left:2px;}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.streak-badge{background:linear-gradient(135deg,rgba(245,158,11,.15),rgba(245,158,11,.05));border:1px solid rgba(245,158,11,.3);border-radius:6px;padding:4px 10px;color:var(--amber);font-family:var(--font-mono);font-size:11px;display:flex;align-items:center;gap:5px;}
+.topbar-date{font-family:var(--font-mono);font-size:10px;color:var(--muted2);background:var(--glass);border:1px solid var(--border);border-radius:5px;padding:4px 10px;}
+.warn-badge{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);border-radius:6px;padding:4px 10px;color:var(--red);font-family:var(--font-mono);font-size:10px;display:none;}
+
+/* SIDEBAR */
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:16px 0;overflow-y:auto;position:sticky;top:54px;height:calc(100vh - 54px);}
+.nav-label{font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;color:var(--muted2);text-transform:uppercase;padding:12px 16px 5px;}
+.nav-btn{display:flex;align-items:center;gap:9px;width:100%;padding:8px 14px;border-radius:0;background:none;border:none;cursor:pointer;color:var(--muted);font-family:var(--font-body);font-size:13px;font-weight:500;transition:all .15s;text-align:left;}
+.nav-btn:hover{background:var(--glass2);color:var(--text);}
+.nav-btn.active{background:linear-gradient(90deg,rgba(124,58,237,.18),rgba(37,99,235,.08));color:var(--violet3);border-left:2px solid var(--violet2);}
+.nav-icon{font-size:14px;width:18px;text-align:center;}
+.nav-count{margin-left:auto;font-family:var(--font-mono);font-size:9px;background:var(--glass);border:1px solid var(--border);border-radius:4px;padding:2px 6px;color:var(--muted2);}
+.nav-count.done{background:rgba(16,185,129,.1);border-color:rgba(16,185,129,.25);color:var(--green);}
+.sidebar-footer{margin-top:auto;padding:14px;border-top:1px solid var(--border);}
+.sf-label{font-size:10px;color:var(--muted2);font-family:var(--font-mono);margin-bottom:8px;}
+.phase-bars{display:flex;flex-direction:column;gap:5px;}
+.pb-row{display:flex;align-items:center;gap:8px;}
+.pb-name{font-size:9px;color:var(--muted2);font-family:var(--font-mono);width:60px;flex-shrink:0;}
+.pb-track{flex:1;height:3px;background:var(--border);border-radius:2px;overflow:hidden;}
+.pb-fill{height:100%;border-radius:2px;transition:width .6s ease;}
+.pb-pct{font-size:9px;color:var(--muted2);font-family:var(--font-mono);width:28px;text-align:right;}
+
+/* MAIN */
+.main{overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:20px;}
+.panel{display:none;flex-direction:column;gap:18px;animation:fadeIn .22s ease;}
+.panel.active{display:flex;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 20px;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.02) 0%,transparent 50%);pointer-events:none;}
+.card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.card-title{font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;display:flex;align-items:center;gap:7px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+
+/* STAT TILES */
+.stat-tile{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:4px;position:relative;overflow:hidden;transition:border-color .2s,transform .2s;}
+.stat-tile:hover{transform:translateY(-2px);border-color:var(--border2);}
+.stat-glow{position:absolute;top:-20px;right:-20px;width:70px;height:70px;border-radius:50%;opacity:.12;}
+.stat-tile.v .stat-glow{background:var(--violet);}
+.stat-tile.g .stat-glow{background:var(--green);}
+.stat-tile.b .stat-glow{background:var(--blue);}
+.stat-tile.a .stat-glow{background:var(--amber);}
+.stat-num{font-family:var(--font-head);font-size:26px;font-weight:800;line-height:1;}
+.stat-tile.v .stat-num{color:var(--violet3);}
+.stat-tile.g .stat-num{color:var(--green2);}
+.stat-tile.b .stat-num{color:var(--blue2);}
+.stat-tile.a .stat-num{color:var(--amber);}
+.stat-lbl{font-size:11px;color:var(--muted);font-family:var(--font-mono);}
+.stat-sub{font-size:10px;color:var(--muted2);}
+
+/* OVERALL PROGRESS */
+.progress-hero{display:flex;align-items:center;gap:24px;flex-wrap:wrap;}
+.ring-wrap{position:relative;width:100px;height:100px;flex-shrink:0;}
+.ring-svg{width:100px;height:100px;}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ring-pct{font-family:var(--font-head);font-size:22px;font-weight:800;color:var(--text);line-height:1;}
+.ring-of{font-family:var(--font-mono);font-size:8px;color:var(--muted2);}
+.ring-info{flex:1;min-width:200px;}
+.ring-info h3{font-family:var(--font-head);font-size:16px;font-weight:700;margin-bottom:4px;}
+.ring-info p{font-size:12px;color:var(--muted);line-height:1.6;}
+.phase-progress-list{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
+.ppl-row{display:flex;align-items:center;gap:10px;}
+.ppl-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.ppl-name{font-size:11px;color:var(--muted);flex:1;}
+.ppl-bar{width:80px;height:3px;background:var(--border);border-radius:2px;overflow:hidden;}
+.ppl-fill{height:100%;border-radius:2px;transition:width .6s;}
+.ppl-pct{font-family:var(--font-mono);font-size:10px;color:var(--muted2);width:28px;text-align:right;}
+
+/* DAILY CHECKLIST */
+.day-nav{display:flex;align-items:center;gap:10px;margin-bottom:4px;}
+.day-nav-title{font-family:var(--font-head);font-size:15px;font-weight:700;flex:1;}
+.day-phase-badge{font-family:var(--font-mono);font-size:9px;padding:3px 9px;border-radius:4px;background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.25);color:var(--violet3);}
+.day-complete-info{font-family:var(--font-mono);font-size:9px;color:var(--green);padding:3px 9px;border-radius:4px;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);display:none;}
+.task-list{display:flex;flex-direction:column;gap:7px;}
+.task-item{display:flex;align-items:flex-start;gap:11px;padding:11px 13px;border-radius:9px;border:1px solid var(--border);background:var(--bg2);cursor:pointer;transition:all .18s;position:relative;overflow:hidden;user-select:none;}
+.task-item:hover:not(.locked):not(.disabled){border-color:var(--border2);background:var(--surface2);}
+.task-item.locked{border-color:rgba(16,185,129,.2);background:rgba(16,185,129,.03);cursor:default;}
+.task-item.locked::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--green);border-radius:0 2px 2px 0;}
+.task-item.disabled{opacity:.35;cursor:not-allowed;}
+.task-cb{width:17px;height:17px;border-radius:4px;border:2px solid var(--border2);flex-shrink:0;margin-top:2px;transition:all .2s;display:flex;align-items:center;justify-content:center;}
+.task-item.locked .task-cb{background:var(--green);border-color:var(--green);}
+.cb-check{display:none;color:#fff;font-size:10px;font-weight:800;}
+.task-item.locked .cb-check{display:block;}
+.task-body{flex:1;min-width:0;}
+.task-name{font-size:13px;font-weight:500;color:var(--text);line-height:1.4;}
+.task-item.locked .task-name{color:var(--muted);text-decoration:line-through;}
+.task-hint{font-size:10px;color:var(--muted2);font-family:var(--font-mono);margin-top:2px;}
+.task-tag{font-size:8px;padding:2px 6px;border-radius:3px;font-family:var(--font-mono);display:inline-block;margin-top:4px;letter-spacing:.04em;}
+.tag-excel{background:rgba(16,185,129,.1);color:var(--green2);border:1px solid rgba(16,185,129,.2);}
+.tag-python{background:rgba(37,99,235,.1);color:var(--blue2);border:1px solid rgba(37,99,235,.2);}
+.tag-sql{background:rgba(124,58,237,.1);color:var(--violet3);border:1px solid rgba(124,58,237,.2);}
+.tag-theory{background:rgba(245,158,11,.1);color:var(--amber);border:1px solid rgba(245,158,11,.2);}
+.tag-pandas{background:rgba(236,72,153,.1);color:#f0abca;border:1px solid rgba(236,72,153,.2);}
+.tag-powerbi{background:rgba(234,179,8,.1);color:#fde047;border:1px solid rgba(234,179,8,.2);}
+
+/* PROOF MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(10px);z-index:200;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:26px;max-width:480px;width:100%;animation:modalIn .25s cubic-bezier(.34,1.4,.64,1);position:relative;}
+@keyframes modalIn{from{opacity:0;transform:scale(.9) translateY(16px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.modal-close{position:absolute;top:12px;right:12px;background:var(--glass);border:1px solid var(--border);color:var(--muted);width:26px;height:26px;border-radius:5px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.modal-close:hover{background:var(--red);color:#fff;border-color:var(--red);}
+.modal-badge{font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);border-radius:4px;color:var(--amber);padding:3px 8px;display:inline-block;margin-bottom:10px;}
+.modal-task-name{font-family:var(--font-head);font-size:16px;font-weight:700;margin-bottom:4px;line-height:1.3;}
+.modal-question{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:14px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;}
+.modal-question strong{color:var(--text);}
+.proof-label{font-family:var(--font-mono);font-size:10px;color:var(--muted2);margin-bottom:6px;letter-spacing:.06em;}
+.proof-textarea{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-family:var(--font-body);font-size:13px;resize:vertical;min-height:90px;outline:none;transition:border-color .2s;line-height:1.5;}
+.proof-textarea:focus{border-color:var(--violet2);}
+.proof-error{font-size:11px;color:var(--red);margin-top:6px;display:none;font-family:var(--font-mono);}
+.proof-counter{font-size:10px;color:var(--muted2);font-family:var(--font-mono);margin-top:4px;}
+.modal-actions{display:flex;gap:8px;margin-top:14px;}
+.btn{padding:9px 18px;border-radius:8px;border:none;cursor:pointer;font-family:var(--font-body);font-size:13px;font-weight:600;transition:all .18s;}
+.btn-cancel{background:var(--glass);border:1px solid var(--border);color:var(--muted);}
+.btn-cancel:hover{background:var(--glass2);color:var(--text);}
+.btn-confirm{background:linear-gradient(135deg,var(--violet),var(--blue));color:#fff;flex:1;}
+.btn-confirm:hover{opacity:.9;transform:translateY(-1px);}
+.btn-confirm:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+
+/* DAILY LOG */
+.log-entry{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:8px;}
+.log-date{font-family:var(--font-mono);font-size:10px;color:var(--violet3);margin-bottom:8px;letter-spacing:.05em;}
+.log-field{display:flex;gap:8px;margin-bottom:6px;align-items:flex-start;}
+.log-icon{font-size:12px;flex-shrink:0;margin-top:1px;}
+.log-key{font-family:var(--font-mono);font-size:10px;color:var(--muted);width:120px;flex-shrink:0;font-weight:600;}
+.log-val{font-size:12px;color:var(--text);flex:1;line-height:1.5;}
+.log-form{display:flex;flex-direction:column;gap:10px;}
+.lf-label{font-family:var(--font-mono);font-size:10px;color:var(--muted2);letter-spacing:.06em;margin-bottom:4px;}
+.lf-input,.lf-textarea{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none;transition:border-color .2s;width:100%;}
+.lf-input:focus,.lf-textarea:focus{border-color:var(--violet2);}
+.lf-textarea{resize:vertical;min-height:60px;line-height:1.5;}
+.lf-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.lf-btn{background:linear-gradient(135deg,var(--violet),var(--blue));color:#fff;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;font-family:var(--font-head);font-size:13px;font-weight:700;transition:all .18s;letter-spacing:.03em;}
+.lf-btn:hover{opacity:.9;transform:translateY(-1px);}
+.logs-history{display:flex;flex-direction:column;gap:8px;max-height:400px;overflow-y:auto;}
+.logs-empty{font-size:12px;color:var(--muted2);text-align:center;padding:24px;font-family:var(--font-mono);}
+
+/* NOTES */
+.notes-area{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px;min-height:220px;color:var(--text);font-family:var(--font-body);font-size:13.5px;line-height:1.7;outline:none;resize:vertical;width:100%;transition:border-color .2s;}
+.notes-area:focus{border-color:var(--violet2);}
+.notes-meta{font-family:var(--font-mono);font-size:10px;color:var(--muted2);margin-top:6px;display:flex;justify-content:space-between;}
+.autosave-indicator{color:var(--green);display:none;}
+
+/* INTERVIEW */
+.q-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:8px;transition:border-color .2s;}
+.q-card:hover{border-color:var(--border2);}
+.q-num{font-family:var(--font-mono);font-size:9px;color:var(--muted2);letter-spacing:.08em;margin-bottom:4px;}
+.q-text{font-size:13px;font-weight:600;color:var(--text);line-height:1.5;margin-bottom:8px;}
+.q-answer{font-size:12px;color:var(--muted);line-height:1.6;display:none;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:10px 12px;margin-top:6px;}
+.q-card.revealed .q-answer{display:block;}
+.q-reveal-btn{font-family:var(--font-mono);font-size:10px;color:var(--violet3);background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.2);border-radius:5px;padding:4px 10px;cursor:pointer;transition:all .15s;}
+.q-reveal-btn:hover{background:rgba(124,58,237,.18);}
+.q-diff{font-size:8px;padding:2px 7px;border-radius:3px;font-family:var(--font-mono);display:inline-block;margin-left:6px;}
+.diff-easy{background:rgba(16,185,129,.1);color:var(--green2);border:1px solid rgba(16,185,129,.2);}
+.diff-med{background:rgba(245,158,11,.1);color:var(--amber);border:1px solid rgba(245,158,11,.2);}
+.diff-hard{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2);}
+
+/* WEEKLY CALENDAR */
+.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:6px;}
+.wday{border-radius:8px;border:1px solid var(--border);padding:10px 6px;text-align:center;font-size:10px;font-family:var(--font-mono);transition:all .2s;}
+.wday-name{color:var(--muted2);letter-spacing:.05em;margin-bottom:4px;}
+.wday-num{font-family:var(--font-head);font-size:18px;font-weight:700;margin-bottom:4px;color:var(--muted);}
+.wday-status{font-size:14px;}
+.wday.done{background:rgba(16,185,129,.05);border-color:rgba(16,185,129,.2);}
+.wday.done .wday-num{color:var(--green2);}
+.wday.today{background:rgba(124,58,237,.08);border-color:rgba(124,58,237,.3);}
+.wday.today .wday-num{color:var(--violet3);}
+.wday.missed{background:rgba(239,68,68,.04);border-color:rgba(239,68,68,.15);}
+.wday.missed .wday-num{color:var(--red);}
+.wday.future{opacity:.35;}
+
+/* ROADMAP PHASES */
+.phase-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;transition:border-color .2s;}
+.phase-card:hover{border-color:var(--border2);}
+.phase-hdr{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.phase-num{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-size:14px;font-weight:800;flex-shrink:0;}
+.phase-meta{flex:1;}
+.phase-name{font-family:var(--font-head);font-size:14px;font-weight:700;}
+.phase-dates{font-family:var(--font-mono);font-size:9px;color:var(--muted2);margin-top:1px;}
+.phase-pct-badge{font-family:var(--font-mono);font-size:11px;font-weight:600;}
+.phase-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:10px;}
+.phase-bar-fill{height:100%;border-radius:2px;transition:width .6s;}
+.phase-skills{display:flex;flex-wrap:wrap;gap:5px;}
+.skill-tag{font-size:9px;padding:3px 8px;border-radius:4px;font-family:var(--font-mono);background:var(--glass);border:1px solid var(--border);color:var(--muted2);}
+
+/* ALERT BANNER */
+.alert-banner{display:none;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:12px 16px;font-size:12px;color:var(--red);font-family:var(--font-mono);align-items:center;gap:10px;}
+.alert-banner.show{display:flex;}
+
+/* MISSION CARD */
+.mission-card{background:linear-gradient(135deg,rgba(124,58,237,.08),rgba(37,99,235,.05));border:1px solid rgba(124,58,237,.2);border-radius:14px;padding:18px 20px;}
+.mc-tag{font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;color:var(--violet3);text-transform:uppercase;margin-bottom:6px;}
+.mc-title{font-family:var(--font-head);font-size:18px;font-weight:800;background:linear-gradient(135deg,var(--violet3),var(--blue2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px;}
+.mc-sub{font-size:12px;color:var(--muted);line-height:1.6;}
+.mc-deadline{font-family:var(--font-mono);font-size:10px;color:var(--amber);margin-top:8px;display:flex;align-items:center;gap:6px;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
+
+/* MOBILE */
+@media(max-width:768px){
+  .shell{grid-template-columns:1fr;}
+  .sidebar{display:none;}
+  .grid2{grid-template-columns:1fr;}
+  .grid4{grid-template-columns:1fr 1fr;}
+  .week-grid{grid-template-columns:repeat(7,1fr);}
+  .progress-hero{flex-direction:column;}
+  .lf-row{grid-template-columns:1fr;}
+}
+
+/* SECTION LABEL */
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.section-title{font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;display:flex;align-items:center;gap:7px;}
+.section-action{font-family:var(--font-mono);font-size:10px;color:var(--violet3);cursor:pointer;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.2);padding:4px 10px;border-radius:5px;transition:all .15s;}
+.section-action:hover{background:rgba(124,58,237,.18);}
+
+.divider{height:1px;background:var(--border);margin:4px 0;}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+<!-- ══ TOPBAR ══ -->
+<header class="topbar">
+  <div class="logo">DA<span class="logo-sep">.</span>MASTERY</div>
+  <div class="topbar-meta">Data Analyst Bootcamp — Self-Accountability Engine</div>
+  <div class="topbar-right">
+    <div class="warn-badge" id="missedBadge">⚠ Missed days detected</div>
+    <div class="streak-badge">🔥 <span id="streakCount">0</span>d streak</div>
+    <div class="topbar-date" id="todayDate"></div>
+  </div>
+</header>
+
+<!-- ══ SIDEBAR ══ -->
+<nav class="sidebar">
+  <div class="nav-label">Overview</div>
+  <button class="nav-btn active" onclick="showPanel('overview')" id="nav-overview">
+    <span class="nav-icon">⚡</span> Dashboard
+  </button>
+  <button class="nav-btn" onclick="showPanel('checklist')" id="nav-checklist">
+    <span class="nav-icon">✅</span> Daily Checklist
+    <span class="nav-count" id="nav-checklist-count">0/0</span>
+  </button>
+
+  <div class="nav-label">Track</div>
+  <button class="nav-btn" onclick="showPanel('log')" id="nav-log">
+    <span class="nav-icon">📓</span> Daily Log
+  </button>
+  <button class="nav-btn" onclick="showPanel('notes')" id="nav-notes">
+    <span class="nav-icon">📝</span> Notes
+  </button>
+  <button class="nav-btn" onclick="showPanel('analytics')" id="nav-analytics">
+    <span class="nav-icon">📊</span> Analytics
+  </button>
+
+  <div class="nav-label">Learn</div>
+  <button class="nav-btn" onclick="showPanel('roadmap')" id="nav-roadmap">
+    <span class="nav-icon">🗺</span> Roadmap
+  </button>
+  <button class="nav-btn" onclick="showPanel('interview')" id="nav-interview">
+    <span class="nav-icon">🎯</span> Interview Prep
+    <span class="nav-count" id="nav-q-count">15 Qs</span>
+  </button>
+
+  <div class="sidebar-footer">
+    <div class="sf-label">// PHASE PROGRESS</div>
+    <div class="phase-bars" id="sidebarPhaseBars"></div>
+  </div>
+</nav>
+
+<!-- ══ MAIN ══ -->
+<main class="main">
+
+  <!-- ────────────────────────────── OVERVIEW ────────────────────────────── -->
+  <div class="panel active" id="panel-overview">
+
+    <div class="mission-card">
+      <div class="mc-tag">// MISSION</div>
+      <div class="mc-title">Become a Job-Ready Data Analyst</div>
+      <div class="mc-sub">March 27 → July 15, 2025 · Excel → Python → Pandas → SQL → Power BI · No excuses. No skipping. Just execution.</div>
+      <div class="mc-deadline">⏳ <span id="daysLeft">110</span> days remaining · Fresher DA role target</div>
+    </div>
+
+    <div class="alert-banner" id="alertBanner">
+      <span>⚠</span> <span id="alertMsg">You missed yesterday. Streak broken. Get back on track NOW — no excuses.</span>
+    </div>
+
+    <div class="grid4">
+      <div class="stat-tile v"><div class="stat-glow"></div><div class="stat-num" id="st-overall">0%</div><div class="stat-lbl">Overall Progress</div><div class="stat-sub" id="st-overall-sub">0 of 110 days</div></div>
+      <div class="stat-tile g"><div class="stat-glow"></div><div class="stat-num" id="st-streak">0</div><div class="stat-lbl">Current Streak 🔥</div><div class="stat-sub">Days in a row</div></div>
+      <div class="stat-tile b"><div class="stat-glow"></div><div class="stat-num" id="st-tasks">0</div><div class="stat-lbl">Tasks Completed</div><div class="stat-sub" id="st-tasks-sub">Today</div></div>
+      <div class="stat-tile a"><div class="stat-glow"></div><div class="stat-num" id="st-missed">0</div><div class="stat-lbl">Days Missed</div><div class="stat-sub">Stay accountable</div></div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <div class="section-hdr">
+          <div class="section-title">📈 Overall Journey</div>
+        </div>
+        <div class="progress-hero">
+          <div class="ring-wrap">
+            <svg class="ring-svg" viewBox="0 0 100 100">
+              <defs>
+                <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style="stop-color:#7c3aed"/>
+                  <stop offset="100%" style="stop-color:#2563eb"/>
+                </linearGradient>
+              </defs>
+              <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="8"/>
+              <circle id="ringArc" cx="50" cy="50" r="42" fill="none" stroke="url(#ringGrad)" stroke-width="8"
+                stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264"
+                transform="rotate(-90 50 50)" style="transition:stroke-dashoffset 1s ease;"/>
+            </svg>
+            <div class="ring-center">
+              <div class="ring-pct" id="ringPct">0%</div>
+              <div class="ring-of">done</div>
+            </div>
+          </div>
+          <div class="ring-info">
+            <h3>110-Day Data Analyst Journey</h3>
+            <p style="font-size:11px;color:var(--muted);">March 27 → July 15, 2025</p>
+            <div class="phase-progress-list" id="phaseProgressList"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-hdr">
+          <div class="section-title">📅 This Week</div>
+        </div>
+        <div class="week-grid" id="weekGrid"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-hdr">
+        <div class="section-title">✅ Today's Tasks (Quick View)</div>
+        <div class="section-action" onclick="showPanel('checklist')">→ Open Checklist</div>
+      </div>
+      <div class="task-list" id="overviewTasks"></div>
+    </div>
+
+  </div>
+
+  <!-- ────────────────────────────── CHECKLIST ────────────────────────────── -->
+  <div class="panel" id="panel-checklist">
+
+    <div class="card">
+      <div class="day-nav">
+        <div>
+          <div class="day-nav-title" id="cl-day-title">Day 1 — March 27</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;font-family:var(--font-mono);">Phase 1: Excel + Python Basics</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div class="day-phase-badge">Phase 1</div>
+          <div class="day-complete-info" id="dayCompleteInfo">✓ Day Complete!</div>
+        </div>
+      </div>
+
+      <div style="background:rgba(124,58,237,.06);border:1px solid rgba(124,58,237,.15);border-radius:8px;padding:10px 12px;margin-bottom:14px;">
+        <div style="font-family:var(--font-mono);font-size:9px;color:var(--violet3);letter-spacing:.08em;margin-bottom:4px;">⚠ ANTI-CHEAT: PROOF MODE ENABLED</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.6;">Every task requires a written proof before it can be marked complete. You must demonstrate understanding — no shortcuts. Tasks are permanently locked once completed.</div>
+      </div>
+
+      <div class="task-list" id="taskList"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title" style="margin-bottom:12px;">🧪 Today's Practice Questions</div>
+      <div id="practiceQuestions"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title" style="margin-bottom:12px;">🏆 Mini Challenge + Real-World Scenario</div>
+      <div id="miniChallenge"></div>
+    </div>
+
+  </div>
+
+  <!-- ────────────────────────────── LOG ────────────────────────────── -->
+  <div class="panel" id="panel-log">
+
+    <div class="card">
+      <div class="section-hdr">
+        <div class="section-title">📓 Log Today's Session</div>
+      </div>
+      <div class="log-form">
+        <div>
+          <div class="lf-label">✅ CONCEPT LEARNED</div>
+          <input type="text" class="lf-input" id="log-concept" placeholder="e.g. Excel VLOOKUP, nested IF formulas">
+        </div>
+        <div>
+          <div class="lf-label">✅ PRACTICE DONE</div>
+          <textarea class="lf-textarea" id="log-practice" placeholder="What exercises, problems, or datasets did you work on?"></textarea>
+        </div>
+        <div class="lf-row">
+          <div>
+            <div class="lf-label">📁 PROJECT PROGRESS</div>
+            <input type="text" class="lf-input" id="log-project" placeholder="Any project updates?">
+          </div>
+          <div>
+            <div class="lf-label">⏱ TIME SPENT</div>
+            <input type="text" class="lf-input" id="log-time" placeholder="e.g. 2.5 hours">
+          </div>
+        </div>
+        <div>
+          <div class="lf-label">❌ DOUBTS / BLOCKERS</div>
+          <textarea class="lf-textarea" id="log-doubts" placeholder="What confused you? What will you revisit?" style="min-height:50px;"></textarea>
+        </div>
+        <button class="lf-btn" onclick="saveLog()">💾 Save Today's Log</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-hdr">
+        <div class="section-title">📚 Log History</div>
+        <div class="section-action" onclick="clearLogs()">Clear All</div>
+      </div>
+      <div class="logs-history" id="logsHistory">
+        <div class="logs-empty">No logs yet. Start logging your daily sessions above.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ────────────────────────────── NOTES ────────────────────────────── -->
+  <div class="panel" id="panel-notes">
+    <div class="card">
+      <div class="section-hdr">
+        <div class="section-title">📝 Personal Notes</div>
+        <div class="notes-meta">
+          <span>Auto-saves on every keystroke</span>
+          <span class="autosave-indicator" id="autosaveIndicator">✓ Saved</span>
+        </div>
+      </div>
+      <textarea class="notes-area" id="notesArea" placeholder="Your personal notes, formulas to remember, key insights, shortcuts, anything...&#10;&#10;💡 Tip: Use this like your second brain. Write what you learn in your own words — that's how you actually remember it."></textarea>
+    </div>
+    <div class="card" style="background:rgba(16,185,129,.03);border-color:rgba(16,185,129,.15);">
+      <div class="section-title" style="margin-bottom:10px;">🤖 GenAI Tips: Using Claude / ChatGPT Effectively</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="font-size:12px;color:var(--muted);line-height:1.6;padding:10px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;">
+          <strong style="color:var(--green2);">Debug Code:</strong> Paste your error + code and say "I'm a beginner learning Python. Explain this error in simple terms and fix it."
+        </div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6;padding:10px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;">
+          <strong style="color:var(--blue2);">Practice SQL:</strong> "Give me 5 SQL questions for a fresher DA interview, from easy to hard. After I answer, give feedback."
+        </div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6;padding:10px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;">
+          <strong style="color:var(--violet3);">Understand Concepts:</strong> "Explain [concept] with a real-world example I'd use as a Data Analyst at an e-commerce company."
+        </div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6;padding:10px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;">
+          <strong style="color:var(--amber);">Improve Projects:</strong> "Review my Pandas code. I'm a beginner. Tell me what's inefficient and how a senior DA would write this."
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ────────────────────────────── ANALYTICS ────────────────────────────── -->
+  <div class="panel" id="panel-analytics">
+
+    <div class="grid4">
+      <div class="stat-tile v"><div class="stat-glow"></div><div class="stat-num" id="an-total-tasks">0</div><div class="stat-lbl">Total Tasks Done</div><div class="stat-sub">All time</div></div>
+      <div class="stat-tile g"><div class="stat-glow"></div><div class="stat-num" id="an-days-done">0</div><div class="stat-lbl">Days Completed</div><div class="stat-sub">Full study days</div></div>
+      <div class="stat-tile b"><div class="stat-glow"></div><div class="stat-num" id="an-best-streak">0</div><div class="stat-lbl">Best Streak</div><div class="stat-sub">Personal record 🏆</div></div>
+      <div class="stat-tile a"><div class="stat-glow"></div><div class="stat-num" id="an-logs">0</div><div class="stat-lbl">Log Entries</div><div class="stat-sub">Sessions documented</div></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title" style="margin-bottom:12px;">📅 Last 30 Days — Activity Heatmap</div>
+      <div id="heatmap" style="display:flex;flex-wrap:wrap;gap:3px;"></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:10px;color:var(--muted2);font-family:var(--font-mono);">
+        <div style="width:10px;height:10px;border-radius:2px;background:var(--surface2);"></div> No activity
+        <div style="width:10px;height:10px;border-radius:2px;background:rgba(16,185,129,.3);"></div> Partial
+        <div style="width:10px;height:10px;border-radius:2px;background:var(--green);"></div> Full day
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title" style="margin-bottom:12px;">⚠ Accountability Report</div>
+      <div id="accountabilityReport" style="font-size:12px;color:var(--muted);line-height:1.8;"></div>
+    </div>
+
+  </div>
+
+  <!-- ────────────────────────────── ROADMAP ────────────────────────────── -->
+  <div class="panel" id="panel-roadmap">
+    <div class="mission-card" style="background:linear-gradient(135deg,rgba(16,185,129,.06),rgba(37,99,235,.04));border-color:rgba(16,185,129,.2);">
+      <div class="mc-tag" style="color:var(--green2);">// 4-PHASE PLAN</div>
+      <div class="mc-title" style="background:linear-gradient(135deg,var(--green2),var(--blue2));-webkit-background-clip:text;">110 Days · Excel → Power BI</div>
+      <div class="mc-sub">No topic jumping. No rushing. Fundamentals first. Each phase builds on the last.</div>
+    </div>
+    <div id="phaseCards"></div>
+  </div>
+
+  <!-- ────────────────────────────── INTERVIEW ────────────────────────────── -->
+  <div class="panel" id="panel-interview">
+    <div class="card">
+      <div class="section-hdr">
+        <div class="section-title">🎯 SQL Interview Questions</div>
+        <div style="font-size:10px;color:var(--muted2);font-family:var(--font-mono);">Click to reveal answer</div>
+      </div>
+      <div id="sqlQuestions"></div>
+    </div>
+    <div class="card">
+      <div class="section-title" style="margin-bottom:12px;">💬 HR / Behavioral Questions</div>
+      <div id="hrQuestions"></div>
+    </div>
+    <div class="card" style="background:rgba(245,158,11,.03);border-color:rgba(245,158,11,.15);">
+      <div class="section-title" style="margin-bottom:10px;">📋 Case Study Approach Framework</div>
+      <div style="display:flex;flex-direction:column;gap:8px;" id="caseStudy"></div>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<!-- ══ PROOF MODAL ══ -->
+<div class="modal-overlay" id="proofModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-badge">⚠ PROOF REQUIRED — ANTI-CHEAT</div>
+    <div class="modal-task-name" id="modalTaskName">Task Name</div>
+    <div class="modal-question" id="modalQuestion">Prove you did this.</div>
+    <div class="proof-label">YOUR PROOF / ANSWER (min 30 characters)</div>
+    <textarea class="proof-textarea" id="proofInput" placeholder="Write what you learned, what you did, or answer the question above..." oninput="updateProofCounter()"></textarea>
+    <div class="proof-counter" id="proofCounter">0 / 30 minimum</div>
+    <div class="proof-error" id="proofError">❌ Too short. Write at least 30 characters to prove you did this.</div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-confirm" id="confirmBtn" onclick="confirmTask()">✓ Mark Complete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════
+const START_DATE = new Date('2025-03-27');
+const END_DATE   = new Date('2025-07-15');
+const TOTAL_DAYS = 110;
+
+const PHASES = [
+  { id:'p1', name:'Excel + Python Basics',    color:'#7c3aed', light:'rgba(124,58,237,.2)',  dates:'Mar 27 – Apr 20', days:25 },
+  { id:'p2', name:'Pandas + EDA + Stats',     color:'#2563eb', light:'rgba(37,99,235,.2)',   dates:'Apr 21 – May 18', days:28 },
+  { id:'p3', name:'SQL + Power BI',           color:'#10b981', light:'rgba(16,185,129,.2)',  dates:'May 19 – Jun 15', days:28 },
+  { id:'p4', name:'Projects + Interview Prep',color:'#f59e0b', light:'rgba(245,158,11,.2)',  dates:'Jun 16 – Jul 15', days:29 },
+];
+
+const PHASE_SKILLS = [
+  ['Excel Basics','Formulas','VLOOKUP','PivotTables','Python Setup','Variables','Loops','Functions'],
+  ['Pandas','DataFrames','EDA','Matplotlib','Seaborn','Statistics','Descriptive Stats','Correlation'],
+  ['SQL SELECT','JOINs','GROUP BY','Subqueries','Window Functions','Power BI','DAX','Dashboards'],
+  ['Capstone Project','Portfolio','LinkedIn','Mock Interviews','Case Studies','Resume','HR Prep','Job Apps'],
+];
+
+const DAY1_TASKS = [
+  { id:'t1', name:'Watch: Excel Interface & Navigation (30 min)', tag:'excel', hint:'Open Excel, explore ribbon, cells, sheets', question:'Name 5 Excel keyboard shortcuts you learned and what they do.' },
+  { id:'t2', name:'Learn: Basic Formulas — SUM, AVERAGE, COUNT, MIN, MAX', tag:'excel', hint:'Type each formula in a blank sheet with sample data', question:'Write the formula to find the average of cells A1 to A10, and explain when you would use COUNTA vs COUNT.' },
+  { id:'t3', name:'Practice: Create a sample sales dataset (20 rows) and apply all 5 formulas', tag:'excel', hint:'Make up product names, quantities, prices', question:'What is the difference between a relative reference (A1) and absolute reference ($A$1)? Give an example.' },
+  { id:'t4', name:'Read: What does a Data Analyst actually do? (30 min research)', tag:'theory', hint:'Google "data analyst day in the life" + read 2 articles', question:'In your own words: what are the top 3 responsibilities of a Data Analyst? Which one interests you most and why?' },
+  { id:'t5', name:'Setup: Install Python + VS Code or use Google Colab', tag:'python', hint:'Just get your environment ready today', question:'Describe the steps you took to set up your Python environment. What did you install? What problems (if any) did you face?' },
+];
+
+const PRACTICE_QS = [
+  '1. In Excel, what is the formula to count only non-empty cells in range B2:B50?',
+  '2. What is the difference between a formula and a function in Excel?',
+  '3. If cell A1 = 100 and B1 = 0, what does =A1/B1 return? How do you handle this?',
+  '4. A dataset has 1000 rows. What Excel feature lets you quickly see totals, averages without formulas?',
+  '5. What is the keyboard shortcut to select an entire column in Excel?',
+];
+
+const MINI_CHALLENGE = {
+  challenge: 'Create an Excel tracker for your own 110-day DA journey: columns for Date, Topic, Hours Studied, Tasks Done, Status (Complete/Skip). Apply SUM and AVERAGE formulas at the bottom. Format the header row with a bold background color.',
+  scenario: 'You join a startup as a junior DA. The founder says: "Our sales were ₹4.2L in Jan, ₹3.8L in Feb, ₹5.1L in Mar. Which month was the best? What was the average?" — Solve this using Excel formulas on a blank sheet.',
+};
+
+const SQL_QS = [
+  { q:'What is the difference between WHERE and HAVING in SQL?', diff:'easy', a:'WHERE filters rows BEFORE grouping. HAVING filters AFTER GROUP BY. Use WHERE for individual row conditions, HAVING for aggregate conditions like HAVING COUNT(*) > 5.' },
+  { q:'Write a query to find the 2nd highest salary from an employees table.', diff:'med', a:'SELECT MAX(salary) FROM employees WHERE salary < (SELECT MAX(salary) FROM employees); — Or use: SELECT salary FROM employees ORDER BY salary DESC LIMIT 1 OFFSET 1;' },
+  { q:'What is the difference between INNER JOIN, LEFT JOIN, and RIGHT JOIN?', diff:'easy', a:'INNER JOIN: only matching rows from both tables. LEFT JOIN: all rows from left + matches from right (NULL if no match). RIGHT JOIN: opposite of LEFT JOIN. Use LEFT JOIN most often in analytics.' },
+  { q:'What does GROUP BY do? Give an example with SUM.', diff:'easy', a:'GROUP BY groups rows with the same value in a column. Example: SELECT city, SUM(revenue) FROM sales GROUP BY city; — gives total revenue per city.' },
+  { q:'What is a subquery? Write one to find employees earning above average salary.', diff:'med', a:'A subquery is a query inside another query. SELECT name, salary FROM employees WHERE salary > (SELECT AVG(salary) FROM employees);' },
+  { q:'Explain RANK(), DENSE_RANK(), and ROW_NUMBER() window functions.', diff:'hard', a:'ROW_NUMBER: unique sequential number (no ties). RANK: same rank for ties, skips numbers after. DENSE_RANK: same rank for ties, no gaps. Example: ROW_NUMBER → 1,2,3; RANK → 1,1,3; DENSE_RANK → 1,1,2.' },
+  { q:'What is the difference between DELETE, DROP, and TRUNCATE?', diff:'easy', a:'DELETE: removes specific rows (with WHERE), can rollback. TRUNCATE: removes all rows fast, cannot rollback easily. DROP: removes the entire table including structure.' },
+];
+
+const HR_QS = [
+  { q:'Tell me about yourself.', a:'Structure: 1) Who I am (background) 2) What I\'ve learned (skills) 3) Why this role. Keep it under 2 minutes. End with why you\'re excited about this position.' },
+  { q:'Why do you want to become a Data Analyst?', a:'Mention: love for data, problem-solving, a specific project or moment that sparked interest, and how this role aligns with your long-term goals.' },
+  { q:'Describe a project where you analyzed data and found an insight.', a:'Use STAR method: Situation (context), Task (what you needed to do), Action (your analysis steps), Result (what you found / impact). Even academic projects count.' },
+  { q:'What tools do you know for data analysis?', a:'Mention what you\'ve actually used. Be honest about level. Better to say "I\'m building Excel and Pandas skills" than to lie. Interviewers will test you.' },
+];
+
+const CASE_STUDY = [
+  { icon:'1️⃣', title:'Clarify the Problem', desc:'Ask: What metric are we optimizing? What time period? Which users/segments? Don\'t start analyzing until you understand the goal.' },
+  { icon:'2️⃣', title:'Check the Data', desc:'What data do we have? How is it structured? Are there nulls, outliers, or quality issues? What are the granularity and dimensions?' },
+  { icon:'3️⃣', title:'Explore + Analyze', desc:'Segment by key dimensions (time, region, product). Look for trends, anomalies, correlations. Form hypotheses and test them.' },
+  { icon:'4️⃣', title:'Root Cause Analysis', desc:'Don\'t stop at "what happened" — dig into "why." Compare periods, cohorts, segments to isolate the cause.' },
+  { icon:'5️⃣', title:'Recommendations', desc:'Tie insights to business actions. Be specific, prioritize by impact and effort. Mention limitations of your analysis.' },
+];
+
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+const S = {
+  get: k => { try { return JSON.parse(localStorage.getItem('da_'+k)); } catch(e){return null;} },
+  set: (k,v) => { localStorage.setItem('da_'+k, JSON.stringify(v)); },
+};
+
+let completedTasks = S.get('completedTasks') || {};   // { 'YYYY-MM-DD': ['t1','t2',...] }
+let logs           = S.get('logs')           || [];
+let notes          = S.get('notes')          || '';
+let dayData        = S.get('dayData')        || {};   // { 'YYYY-MM-DD': {done:bool} }
+let bestStreak     = S.get('bestStreak')     || 0;
+
+let pendingTaskId  = null;
+
+// ═══════════════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════════════
+function today()    { return fmtDate(new Date()); }
+function fmtDate(d) { return d.toISOString().split('T')[0]; }
+function dayDiff(d1,d2){ return Math.floor((d2-d1)/(1000*60*60*24)); }
+
+function todayKey()  { return today(); }
+function getDoneTasks(dateKey) { return completedTasks[dateKey] || []; }
+
+function computeStreak() {
+  let streak = 0;
+  const d = new Date(); d.setHours(0,0,0,0);
+  for(let i=0;;i++){
+    const k = fmtDate(new Date(d - i*86400000));
+    const done = getDoneTasks(k);
+    if(done.length >= DAY1_TASKS.length) streak++;
+    else if(i>0) break;
+    if(i>0 && done.length < DAY1_TASKS.length) break;
+    if(i>=200) break;
+  }
+  return streak;
+}
+
+function computeMissedDays() {
+  const start = new Date(START_DATE); start.setHours(0,0,0,0);
+  const now   = new Date(); now.setHours(0,0,0,0);
+  let missed  = 0;
+  for(let d=new Date(start); d<now; d.setDate(d.getDate()+1)){
+    const k    = fmtDate(d);
+    const done = getDoneTasks(k);
+    if(done.length < DAY1_TASKS.length) missed++;
+  }
+  return missed;
+}
+
+function computeDaysDone() {
+  let count = 0;
+  for(const k in completedTasks){
+    if((completedTasks[k]||[]).length >= DAY1_TASKS.length) count++;
+  }
+  return count;
+}
+
+function daysElapsed() {
+  const now = new Date(); now.setHours(0,0,0,0);
+  return Math.max(0, dayDiff(START_DATE, now));
+}
+
+function overallPct() {
+  return Math.round(Math.min(100, (daysElapsed()/TOTAL_DAYS)*100));
+}
+
+function phaseProgress(phaseIdx) {
+  let start=0;
+  for(let i=0;i<phaseIdx;i++) start+=PHASES[i].days;
+  const elapsed = daysElapsed();
+  const into    = Math.max(0, elapsed-start);
+  return Math.min(100, Math.round((into/PHASES[phaseIdx].days)*100));
+}
+
+// ═══════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════
+function showPanel(id) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  const nb = document.getElementById('nav-'+id);
+  if(nb) nb.classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════
+// RENDER FUNCTIONS
+// ═══════════════════════════════════════════════════
+function renderTopbar() {
+  const now = new Date();
+  document.getElementById('todayDate').textContent = now.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'});
+
+  const streak = computeStreak();
+  document.getElementById('streakCount').textContent = streak;
+  if(streak>bestStreak){ bestStreak=streak; S.set('bestStreak',bestStreak); }
+
+  // missed yesterday?
+  const yest = new Date(now); yest.setDate(yest.getDate()-1);
+  const yk   = fmtDate(yest);
+  const yDone = getDoneTasks(yk);
+  const yStart= new Date(START_DATE); yStart.setHours(0,0,0,0); yest.setHours(0,0,0,0);
+  if(yest >= yStart && yDone.length < DAY1_TASKS.length){
+    document.getElementById('missedBadge').style.display='flex';
+    document.getElementById('alertBanner').classList.add('show');
+  }
+}
+
+function renderStats() {
+  const pct    = overallPct();
+  const streak = computeStreak();
+  const missed = computeMissedDays();
+  const todayDone = getDoneTasks(today()).length;
+
+  document.getElementById('st-overall').textContent = pct+'%';
+  document.getElementById('st-overall-sub').textContent = `${daysElapsed()} of ${TOTAL_DAYS} days`;
+  document.getElementById('st-streak').textContent = streak;
+  document.getElementById('st-tasks').textContent  = todayDone;
+  document.getElementById('st-tasks-sub').textContent = `${todayDone}/${DAY1_TASKS.length} today`;
+  document.getElementById('st-missed').textContent = missed;
+  document.getElementById('daysLeft').textContent  = Math.max(0,TOTAL_DAYS-daysElapsed());
+
+  // ring
+  const circumference = 2*Math.PI*42;
+  const offset = circumference*(1-pct/100);
+  document.getElementById('ringArc').style.strokeDashoffset = offset;
+  document.getElementById('ringPct').textContent = pct+'%';
+
+  // analytics
+  document.getElementById('an-total-tasks').textContent = Object.values(completedTasks).reduce((s,a)=>s+(a||[]).length,0);
+  document.getElementById('an-days-done').textContent   = computeDaysDone();
+  document.getElementById('an-best-streak').textContent = bestStreak;
+  document.getElementById('an-logs').textContent        = logs.length;
+}
+
+function renderPhaseProgressList() {
+  const el = document.getElementById('phaseProgressList');
+  el.innerHTML = PHASES.map((p,i)=>{
+    const pct = phaseProgress(i);
+    return `<div class="ppl-row">
+      <div class="ppl-dot" style="background:${p.color}"></div>
+      <div class="ppl-name">Phase ${i+1}</div>
+      <div class="ppl-bar"><div class="ppl-fill" style="background:${p.color};width:${pct}%"></div></div>
+      <div class="ppl-pct">${pct}%</div>
+    </div>`;
+  }).join('');
+}
+
+function renderSidebarPhases() {
+  const el = document.getElementById('sidebarPhaseBars');
+  el.innerHTML = PHASES.map((p,i)=>{
+    const pct = phaseProgress(i);
+    return `<div class="pb-row">
+      <div class="pb-name">Ph${i+1}</div>
+      <div class="pb-track"><div class="pb-fill" style="background:${p.color};width:${pct}%"></div></div>
+      <div class="pb-pct">${pct}%</div>
+    </div>`;
+  }).join('');
+}
+
+function renderWeekGrid() {
+  const el = document.getElementById('weekGrid');
+  const now = new Date(); now.setHours(0,0,0,0);
+  const mon = new Date(now);
+  mon.setDate(now.getDate()-((now.getDay()+6)%7));
+  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  let html='';
+  for(let i=0;i<7;i++){
+    const d = new Date(mon); d.setDate(mon.getDate()+i);
+    const k = fmtDate(d);
+    const isToday = k===fmtDate(now);
+    const isFuture= d>now;
+    const done = getDoneTasks(k);
+    const full = done.length >= DAY1_TASKS.length;
+    const partial = done.length > 0 && !full;
+    let cls='wday';
+    if(isToday) cls+=' today';
+    else if(isFuture) cls+=' future';
+    else if(full) cls+=' done';
+    else if(d>=START_DATE && !isFuture) cls+=' missed';
+    const emoji = isToday?'📍': isFuture?'':'':full?'✅':partial?'🟡':'❌';
+    html+=`<div class="${cls}"><div class="wday-name">${days[i]}</div><div class="wday-num">${d.getDate()}</div><div class="wday-status">${emoji}</div></div>`;
+  }
+  el.innerHTML=html;
+}
+
+function tagHtml(tag) {
+  const map={excel:'tag-excel',python:'tag-python',sql:'tag-sql',theory:'tag-theory',pandas:'tag-pandas',powerbi:'tag-powerbi'};
+  return `<span class="task-tag ${map[tag]||'tag-theory'}">${tag.toUpperCase()}</span>`;
+}
+
+function renderTaskList() {
+  const tk   = today();
+  const done = getDoneTasks(tk);
+  const el   = document.getElementById('taskList');
+  const nav  = document.getElementById('nav-checklist-count');
+  nav.textContent = `${done.length}/${DAY1_TASKS.length}`;
+  if(done.length>=DAY1_TASKS.length) nav.className='nav-count done';
+
+  el.innerHTML = DAY1_TASKS.map(t=>{
+    const isDone = done.includes(t.id);
+    return `<div class="task-item${isDone?' locked':''}" onclick="clickTask('${t.id}')" id="task-${t.id}">
+      <div class="task-cb"><span class="cb-check">✓</span></div>
+      <div class="task-body">
+        <div class="task-name">${t.name}</div>
+        <div class="task-hint">${t.hint}</div>
+        ${tagHtml(t.tag)}
+      </div>
+    </div>`;
+  }).join('');
+
+  // day complete indicator
+  if(done.length>=DAY1_TASKS.length){
+    document.getElementById('dayCompleteInfo').style.display='inline-flex';
+  }
+
+  renderOverviewTasks();
+}
+
+function renderOverviewTasks() {
+  const tk   = today();
+  const done = getDoneTasks(tk);
+  const el   = document.getElementById('overviewTasks');
+  el.innerHTML = DAY1_TASKS.slice(0,3).map(t=>{
+    const isDone=done.includes(t.id);
+    return `<div class="task-item${isDone?' locked':''}" onclick="showPanel('checklist')" style="cursor:pointer;">
+      <div class="task-cb"><span class="cb-check">✓</span></div>
+      <div class="task-body">
+        <div class="task-name">${t.name}</div>
+        ${tagHtml(t.tag)}
+      </div>
+    </div>`;
+  }).join('') + `<div style="font-size:11px;color:var(--muted2);font-family:var(--font-mono);text-align:center;padding:8px;">→ ${DAY1_TASKS.length-3} more tasks in checklist</div>`;
+}
+
+function renderPracticeQs() {
+  const el = document.getElementById('practiceQuestions');
+  el.innerHTML = PRACTICE_QS.map(q=>`
+    <div style="display:flex;gap:8px;padding:9px 0;border-bottom:1px solid var(--border);">
+      <span style="font-family:var(--font-mono);font-size:11px;color:var(--muted2);flex-shrink:0;"></span>
+      <span style="font-size:13px;color:var(--text);">${q}</span>
+    </div>`).join('');
+}
+
+function renderMiniChallenge() {
+  const el = document.getElementById('miniChallenge');
+  el.innerHTML = `
+    <div style="background:rgba(124,58,237,.06);border:1px solid rgba(124,58,237,.2);border-radius:9px;padding:12px 14px;margin-bottom:10px;">
+      <div style="font-family:var(--font-mono);font-size:9px;color:var(--violet3);letter-spacing:.1em;margin-bottom:6px;">🏆 MINI CHALLENGE</div>
+      <div style="font-size:12.5px;color:var(--text);line-height:1.6;">${MINI_CHALLENGE.challenge}</div>
+    </div>
+    <div style="background:rgba(16,185,129,.04);border:1px solid rgba(16,185,129,.15);border-radius:9px;padding:12px 14px;">
+      <div style="font-family:var(--font-mono);font-size:9px;color:var(--green2);letter-spacing:.1em;margin-bottom:6px;">🌍 REAL-WORLD SCENARIO</div>
+      <div style="font-size:12.5px;color:var(--text);line-height:1.6;">${MINI_CHALLENGE.scenario}</div>
+    </div>`;
+}
+
+function renderPhaseCards() {
+  const el = document.getElementById('phaseCards');
+  el.innerHTML = PHASES.map((p,i)=>{
+    const pct = phaseProgress(i);
+    const skills = PHASE_SKILLS[i].map(s=>`<span class="skill-tag">${s}</span>`).join('');
+    return `<div class="phase-card" style="margin-bottom:12px;">
+      <div class="phase-hdr">
+        <div class="phase-num" style="background:${p.light};color:${p.color};">P${i+1}</div>
+        <div class="phase-meta">
+          <div class="phase-name">Phase ${i+1}: ${p.name}</div>
+          <div class="phase-dates">${p.dates} · ${p.days} days</div>
+        </div>
+        <div class="phase-pct-badge" style="color:${p.color};font-family:var(--font-mono);">${pct}%</div>
+      </div>
+      <div class="phase-bar"><div class="phase-bar-fill" style="background:${p.color};width:${pct}%"></div></div>
+      <div class="phase-skills">${skills}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderInterview() {
+  const sq = document.getElementById('sqlQuestions');
+  sq.innerHTML = SQL_QS.map((q,i)=>`
+    <div class="q-card" id="qcard-${i}">
+      <div class="q-num">Q${i+1} <span class="q-diff diff-${q.diff}">${q.diff}</span></div>
+      <div class="q-text">${q.q}</div>
+      <div style="display:flex;justify-content:flex-end;">
+        <button class="q-reveal-btn" onclick="revealQ(${i})">Show Answer →</button>
+      </div>
+      <div class="q-answer">${q.a}</div>
+    </div>`).join('');
+
+  const hq = document.getElementById('hrQuestions');
+  hq.innerHTML = HR_QS.map((q,i)=>`
+    <div class="q-card" id="hqcard-${i}">
+      <div class="q-num">HR Q${i+1}</div>
+      <div class="q-text">${q.q}</div>
+      <div style="display:flex;justify-content:flex-end;">
+        <button class="q-reveal-btn" onclick="revealHR(${i})">Show Tips →</button>
+      </div>
+      <div class="q-answer">${q.a}</div>
+    </div>`).join('');
+
+  const cs = document.getElementById('caseStudy');
+  cs.innerHTML = CASE_STUDY.map(s=>`
+    <div style="display:flex;gap:10px;padding:10px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;">
+      <span style="font-size:16px;flex-shrink:0;">${s.icon}</span>
+      <div>
+        <div style="font-weight:600;font-size:13px;margin-bottom:3px;">${s.title}</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.6;">${s.desc}</div>
+      </div>
+    </div>`).join('');
+}
+
+function renderHeatmap() {
+  const el = document.getElementById('heatmap');
+  const now = new Date(); now.setHours(0,0,0,0);
+  let html='';
+  for(let i=29;i>=0;i--){
+    const d = new Date(now); d.setDate(d.getDate()-i);
+    const k = fmtDate(d);
+    const done = getDoneTasks(k);
+    const full = done.length>=DAY1_TASKS.length;
+    const partial = done.length>0&&!full;
+    const isFuture = d>now;
+    let bg = 'var(--surface2)';
+    if(!isFuture){ if(full) bg='var(--green)'; else if(partial) bg='rgba(16,185,129,.3)'; }
+    html+=`<div title="${k}: ${done.length}/${DAY1_TASKS.length} tasks" style="width:16px;height:16px;border-radius:3px;background:${bg};cursor:default;"></div>`;
+  }
+  el.innerHTML=html;
+}
+
+function renderAccountability() {
+  const el = document.getElementById('accountabilityReport');
+  const streak = computeStreak();
+  const missed = computeMissedDays();
+  const done   = computeDaysDone();
+  const elapsed= daysElapsed();
+
+  let msg='';
+  if(elapsed===0){
+    msg='<span style="color:var(--green2);">🚀 Day 1 starts TODAY. Make it count. Every single task. No skipping.</span>';
+  } else if(streak>=7){
+    msg=`<span style="color:var(--green2);">🔥 ${streak}-day streak! Incredible discipline. Keep this momentum — this is how careers are built.</span>`;
+  } else if(missed>elapsed*0.3){
+    msg=`<span style="color:var(--red);">⚠ You've missed ${missed} out of ${elapsed} days. That's ${Math.round(missed/elapsed*100)}% miss rate. This is a serious problem. Pick ONE time per day for studying and commit to it.</span>`;
+  } else if(missed>0){
+    msg=`<span style="color:var(--amber);">You've completed ${done} days and missed ${missed}. Stay consistent — the gap between learning and not learning compounds fast.</span>`;
+  } else {
+    msg=`<span style="color:var(--green2);">Perfect ${done}-day record so far! ${elapsed===1?'Great start.':'Keep this up.'}</span>`;
+  }
+  el.innerHTML=msg;
+}
+
+// ═══════════════════════════════════════════════════
+// TASK INTERACTION
+// ═══════════════════════════════════════════════════
+function clickTask(id) {
+  const tk   = today();
+  const done = getDoneTasks(tk);
+  if(done.includes(id)) return; // already done, ignore
+  pendingTaskId = id;
+  const task = DAY1_TASKS.find(t=>t.id===id);
+  document.getElementById('modalTaskName').textContent = task.name;
+  document.getElementById('modalQuestion').innerHTML = `<strong>Prove you did this:</strong> ${task.question}`;
+  document.getElementById('proofInput').value='';
+  document.getElementById('proofCounter').textContent='0 / 30 minimum';
+  document.getElementById('proofError').style.display='none';
+  document.getElementById('confirmBtn').disabled=false;
+  document.getElementById('proofModal').classList.add('open');
+  setTimeout(()=>document.getElementById('proofInput').focus(),300);
+}
+
+function closeModal() {
+  document.getElementById('proofModal').classList.remove('open');
+  pendingTaskId=null;
+}
+
+function updateProofCounter() {
+  const val = document.getElementById('proofInput').value;
+  const len  = val.trim().length;
+  document.getElementById('proofCounter').textContent=`${len} / 30 minimum`;
+  document.getElementById('proofError').style.display='none';
+  const color = len>=30?'var(--green2)':'var(--muted2)';
+  document.getElementById('proofCounter').style.color=color;
+}
+
+function confirmTask() {
+  const val = document.getElementById('proofInput').value.trim();
+  if(val.length<30){
+    document.getElementById('proofError').style.display='block';
+    document.getElementById('proofInput').focus();
+    return;
+  }
+  const tk   = today();
+  const done = getDoneTasks(tk);
+  if(!done.includes(pendingTaskId)){
+    done.push(pendingTaskId);
+    completedTasks[tk]=done;
+    S.set('completedTasks',completedTasks);
+  }
+  closeModal();
+  renderAll();
+  // flash
+  const el = document.getElementById('task-'+pendingTaskId);
+  if(el){ el.style.transition='background .4s'; setTimeout(()=>el.style.background='',500); }
+}
+
+// ═══════════════════════════════════════════════════
+// INTERVIEW
+// ═══════════════════════════════════════════════════
+function revealQ(i) { document.getElementById('qcard-'+i).classList.toggle('revealed'); }
+function revealHR(i){ document.getElementById('hqcard-'+i).classList.toggle('revealed'); }
+
+// ═══════════════════════════════════════════════════
+// LOG
+// ═══════════════════════════════════════════════════
+function saveLog() {
+  const concept = document.getElementById('log-concept').value.trim();
+  const practice= document.getElementById('log-practice').value.trim();
+  const project = document.getElementById('log-project').value.trim();
+  const time    = document.getElementById('log-time').value.trim();
+  const doubts  = document.getElementById('log-doubts').value.trim();
+  if(!concept && !practice){ alert('Fill in at least concept and practice fields!'); return; }
+
+  const entry = { date:today(), concept, practice, project, time, doubts, ts:Date.now() };
+  logs.unshift(entry);
+  S.set('logs',logs);
+  document.getElementById('log-concept').value='';
+  document.getElementById('log-practice').value='';
+  document.getElementById('log-project').value='';
+  document.getElementById('log-time').value='';
+  document.getElementById('log-doubts').value='';
+  renderLogs();
+  renderStats();
+}
+
+function clearLogs() {
+  if(!confirm('Clear all logs? This cannot be undone.')) return;
+  logs=[]; S.set('logs',logs); renderLogs(); renderStats();
+}
+
+function renderLogs() {
+  const el = document.getElementById('logsHistory');
+  if(!logs.length){ el.innerHTML='<div class="logs-empty">No logs yet. Start logging your daily sessions.</div>'; return; }
+  el.innerHTML = logs.map(l=>`
+    <div class="log-entry">
+      <div class="log-date">${l.date}</div>
+      ${l.concept ? `<div class="log-field"><span class="log-icon">✅</span><span class="log-key">Concept:</span><span class="log-val">${l.concept}</span></div>`:'' }
+      ${l.practice? `<div class="log-field"><span class="log-icon">✅</span><span class="log-key">Practice:</span><span class="log-val">${l.practice}</span></div>`:''}
+      ${l.project ? `<div class="log-field"><span class="log-icon">📁</span><span class="log-key">Project:</span><span class="log-val">${l.project}</span></div>`:''}
+      ${l.time    ? `<div class="log-field"><span class="log-icon">⏱</span><span class="log-key">Time:</span><span class="log-val">${l.time}</span></div>`:''}
+      ${l.doubts  ? `<div class="log-field"><span class="log-icon">❌</span><span class="log-key">Doubts:</span><span class="log-val">${l.doubts}</span></div>`:''}
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════
+// NOTES
+// ═══════════════════════════════════════════════════
+let saveTimer;
+function initNotes() {
+  const ta = document.getElementById('notesArea');
+  ta.value = notes;
+  ta.addEventListener('input', ()=>{
+    notes = ta.value;
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(()=>{
+      S.set('notes',notes);
+      const ind=document.getElementById('autosaveIndicator');
+      ind.style.display='inline';
+      setTimeout(()=>ind.style.display='none',2000);
+    },600);
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// MASTER RENDER
+// ═══════════════════════════════════════════════════
+function renderAll() {
+  renderTopbar();
+  renderStats();
+  renderPhaseProgressList();
+  renderSidebarPhases();
+  renderWeekGrid();
+  renderTaskList();
+  renderHeatmap();
+  renderAccountability();
+}
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', ()=>{
+  renderAll();
+  renderPracticeQs();
+  renderMiniChallenge();
+  renderPhaseCards();
+  renderInterview();
+  renderLogs();
+  initNotes();
+
+  // close modal on overlay click
+  document.getElementById('proofModal').addEventListener('click', function(e){
+    if(e.target===this) closeModal();
+  });
+
+  // refresh every minute
+  setInterval(renderAll, 60000);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kinesis — Interactive Roadmap</title>
+<meta name="description" content="Kinesis DS→GenAI Interactive Roadmap — track tasks, mark stages complete, build your streak.">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ── KINESIS NAV BAR ── */
+.kinesis-nav{
+  position:sticky;top:0;z-index:999;
+  display:flex;align-items:center;gap:6px;
+  padding:0 22px;height:52px;
+  background:rgba(10,11,15,.97);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,.08);
+  font-family:'Space Grotesk',sans-serif;
+}
+.kn-logo{
+  font-family:'Syne',sans-serif;font-size:15px;font-weight:800;
+  letter-spacing:.04em;text-decoration:none;
+  background:linear-gradient(135deg,#9d5ffa,#60a5fa);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;
+  margin-right:4px;
+}
+.kn-link{
+  font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;
+  color:#8890a8;text-decoration:none;padding:5px 11px;border-radius:6px;
+  transition:all .18s;letter-spacing:.04em;
+}
+.kn-link:hover{color:#e8eaf2;background:rgba(255,255,255,.07);}
+.kn-link.active{color:#c4a3ff;background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.2);}
+.kn-sep{width:1px;height:16px;background:rgba(255,255,255,.08);margin:0 2px;}
+.kn-streak{
+  margin-left:auto;
+  background:linear-gradient(135deg,rgba(245,158,11,.15),rgba(245,158,11,.05));
+  border:1px solid rgba(245,158,11,.3);border-radius:6px;
+  padding:4px 10px;color:#f59e0b;
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+}
+.kn-date{
+  font-family:'JetBrains Mono',monospace;font-size:10px;color:#5c6480;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  border-radius:5px;padding:4px 10px;
+}
+
+/* ── LOADING STATE ── */
+#roadmap-content.loading{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:#f7f4ef;
+}
+.loader{font-family:'JetBrains Mono',monospace;font-size:13px;color:#7a6a5e;}
+
+/* ── TODAY'S PROGRESS PANEL (floating top-right) ── */
+#todayPanel{
+  position:fixed;top:68px;right:18px;z-index:998;
+  background:rgba(10,11,15,.92);backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,.1);border-radius:12px;
+  padding:12px 16px;min-width:190px;
+  font-family:'JetBrains Mono',monospace;
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+  transition:opacity .2s;
+}
+.tp-title{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#5c6480;margin-bottom:6px;}
+.tp-counts{font-size:18px;font-weight:700;color:#e8eaf2;line-height:1;}
+.tp-counts span{color:#34d399;}
+.tp-label{font-size:9px;color:#8890a8;margin-top:2px;}
+.tp-bar{height:3px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;margin-top:8px;}
+.tp-bar-fill{height:100%;background:linear-gradient(90deg,#7c3aed,#10b981);border-radius:2px;transition:width .5s ease;}
+
+/* ── RESET TODAY BUTTON (floating bottom-left) ── */
+#resetBtn{
+  position:fixed;bottom:24px;left:24px;z-index:998;
+  background:rgba(10,11,15,.9);backdrop-filter:blur(12px);
+  border:1px solid rgba(239,68,68,.25);border-radius:10px;
+  padding:9px 14px;color:#ef4444;cursor:pointer;
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  display:flex;align-items:center;gap:7px;
+  transition:all .18s;box-shadow:0 4px 18px rgba(0,0,0,.3);
+}
+#resetBtn:hover{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.4);}
+
+/* ── CUSTOM CHECKBOXES ── */
+.kn-task-li{
+  display:flex !important;align-items:flex-start;gap:9px;
+  padding:5px 0;cursor:pointer;user-select:none;
+  border-radius:6px;transition:background .15s;
+  position:relative;
+}
+.kn-task-li input[type=checkbox]{display:none;}
+.kn-cb{
+  width:15px;height:15px;border-radius:4px;
+  border:2px solid #cec4b8;background:#fff;
+  flex-shrink:0;margin-top:1px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;font-size:9px;color:#fff;
+  font-weight:800;line-height:1;
+}
+.kn-task-li.checked .kn-cb{background:#10b981;border-color:#10b981;}
+.kn-task-li.checked .kn-cb::after{content:'✓';}
+.kn-task-text{font-size:12px;color:#5c4d43;line-height:1.45;font-weight:400;flex:1;}
+.kn-task-li.checked .kn-task-text{text-decoration:line-through;color:#b0a398;}
+.kn-check-badge{
+  font-size:8px;padding:1px 6px;border-radius:3px;
+  background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);
+  color:#059669;font-family:'JetBrains Mono',monospace;flex-shrink:0;
+  visibility:hidden;margin-top:1px;
+}
+.kn-task-li.checked .kn-check-badge{visibility:visible;}
+
+/* ── MARK STAGE COMPLETE BUTTON ── */
+.kn-stage-btn{
+  display:block;width:100%;margin-top:14px;
+  padding:10px 16px;border-radius:8px;
+  font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;
+  cursor:pointer;transition:all .2s;text-align:center;
+  border:1.5px solid #cec4b8;background:#fff;color:#7a6a5e;
+}
+.kn-stage-btn:not(:disabled):hover{background:#0d7a5f;color:#fff;border-color:#0d7a5f;}
+.kn-stage-btn:disabled{opacity:.4;cursor:not-allowed;}
+.kn-stage-btn.complete{background:rgba(13,122,95,.08);border-color:rgba(13,122,95,.3);color:#0d7a5f;}
+
+/* ── WRAP PADDING FOR NAV ── */
+#roadmap-content .wrap{padding-top:36px !important;}
+</style>
+</head>
+<body>
+
+<!-- NAV BAR -->
+<nav class="kinesis-nav">
+  <a class="kn-logo" href="index.html">KINESIS</a>
+  <div class="kn-sep"></div>
+  <a class="kn-link" href="index.html">⚡ Dashboard</a>
+  <div class="kn-sep"></div>
+  <a class="kn-link active" href="roadmap.html">🗺 Roadmap</a>
+  <div class="kn-streak">🔥 <span id="navStreak">0</span>d</div>
+  <div class="kn-date" id="navDate"></div>
+</nav>
+
+<!-- TODAY'S PROGRESS PANEL -->
+<div id="todayPanel">
+  <div class="tp-title">// Today's Progress</div>
+  <div class="tp-counts"><span id="tpDone">0</span> / <span id="tpTotal">0</span></div>
+  <div class="tp-label">tasks ticked today</div>
+  <div class="tp-bar"><div class="tp-bar-fill" id="tpBarFill" style="width:0%"></div></div>
+</div>
+
+<!-- CONTENT (loaded from roadmap_v4.html) -->
+<div id="roadmap-content" class="loading">
+  <div class="loader">Loading roadmap...</div>
+</div>
+
+<!-- RESET TODAY BUTTON -->
+<button id="resetBtn" onclick="confirmReset()">↺ Reset Today</button>
+
+<!-- ═══ CURATED YOUTUBE LEARNING PATH ═══ -->
+<section id="ytResources" style="
+  background:#f7f4ef;
+  border-top:2px solid #e4ddd4;
+  padding:64px 20px;
+  font-family:'Nunito',sans-serif;
+">
+  <div style="max-width:1080px;margin:0 auto;">
+
+    <!-- Header -->
+    <div style="text-align:center;margin-bottom:48px;">
+      <span style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#1a56c4;display:block;margin-bottom:12px;">// curated learning path</span>
+      <h2 style="font-family:'Lora',serif;font-size:clamp(26px,4vw,40px);font-weight:700;color:#2e241d;line-height:1.15;margin-bottom:10px;">Your YouTube Roadmap</h2>
+      <p style="color:#7a6a5e;font-size:14px;max-width:520px;margin:0 auto;line-height:1.7;">Follow this order — beginner → AI builder. Each channel is hand-picked for this exact journey.</p>
+    </div>
+
+    <!-- Channel Cards Grid -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;">
+
+      <!-- 1 -->
+      <a href="https://www.youtube.com/@3blue1brown" target="_blank" style="text-decoration:none;">
+        <div style="background:#fff;border:1.5px solid #e4ddd4;border-radius:14px;padding:20px;transition:all .2s;box-shadow:0 2px 8px rgba(46,36,29,.05);"
+             onmouseover="this.style.borderColor='#1a56c4';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(26,86,196,.12)'"
+             onmouseout="this.style.borderColor='#e4ddd4';this.style.transform='none';this.style.boxShadow='0 2px 8px rgba(46,36,29,.05)'">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+            <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#6d28d9,#1a56c4);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🧠</div>
+            <div>
+              <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#7a6a5e;margin-bottom:2px;">Step 1 · Math</div>
+              <div style="font-family:'Lora',serif;font-size:14px;font-weight:700;color:#2e241d;">3Blue1Brown</div>
+            </div>
+          </div>
+          <p style="font-size:12px;color:#5c4d43;line-height:1.6;margin:0;">Linear Algebra &amp; Calculus with pure visual intuition. The best math channel on the internet — start here.</p>
+          <div style="margin-top:10px;display:inline-flex;align-items:center;gap:5px;font-size:10px;font-family:'DM Mono',monospace;color:#1a56c4;">Watch now ↗</div>
+        </div>
+      </a>
+
+      <!-- 2 -->
+      <a href="https://www.youtube.com/@freecodecamp" target="_blank" style="text-decoration:none;">
+        <div style="background:#fff;border:1.5px solid #e4ddd4;border-radius:14px;padding:20px;transition:all .2s;box-shadow:0 2px 8px rgba(46,36,29,.05);"
+             onmouseover="this.style.borderColor='#0d7a5f';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(13,122,95,.12)'"
+             onmouseout="this.style.borderColor='#e4ddd4';this.style.transform='none';this.style.boxShadow='0 2px 8px rgba(46,36,29,.05)'">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+            <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#0d7a5f,#0369a1);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">💻</div>
+            <div>
+              <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#7a6a5e;margin-bottom:2px;">Step 2 · Python</div>
+              <div style="font-family:'Lora',serif;font-size:14px;font-weight:700;color:#2e241d;">freeCodeCamp</div>
+            </div>
+          </div>
+          <p style="font-size:12px;color:#5c4d43;line-height:1.6;margin:0;">Python fundamentals, data analysis, and full-length AI/ML project courses. Free, beginner-friendly.</p>
+          <div style="margin-top:10px;display:inline-flex;align-items:center;gap:5px;font-size:10px;font-family:'DM Mono',monospace;color:#0d7a5f;">Watch now ↗</div>
+        </div>
+      </a>
+
+      <!-- 3 -->
+      <a href="https://www.youtube.com/@codebasics" target="_blank" style="text-decoration:none;">
+        <div style="background:#fff;border:1.5px solid #e4ddd4;border-radius:14px;padding:20px;transition:all .2s;box-shadow:0 2px 8px rgba(46,36,29,.05);"
+             onmouseover="this.style.borderColor='#b45309';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(180,83,9,.12)'"
+             onmouseout="this.style.borderColor='#e4ddd4';this.style.transform='none';this.style.boxShadow='0 2px 8px rgba(46,36,29,.05)'">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+            <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#b45309,#c2410c);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📊</div>
+            <div>
+              <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#7a6a5e;margin-bottom:2px;">Step 3 · ML</div>
+              <div style="font-family:'Lora',serif;font-size:14px;font-weight:700;color:#2e241d;">Codebasics</div>
+            </div>
+          </div>
+          <p style="font-size:12px;color:#5c4d43;line-height:1.6;margin:0;">Pandas, sklearn, ML algorithms with real datasets and projects. Practical, industry-focused teaching.</p>
+          <div style="margin-top:10px;display:inline-flex;align-items:center;gap:5px;font-size:10px;font-family:'DM Mono',monospace;color:#b45309;">Watch now ↗</div>
+        </div>
+      </a>
+
+      <!-- 4 -->
+      <a href="https://www.youtube.com/@AndrejKarpathy" target="_blank" style="text-decoration:none;">
+        <div style="background:#fff;border:1.5px solid #e4ddd4;border-radius:14px;padding:20px;transition:all .2s;box-shadow:0 2px 8px rgba(46,36,29,.05);"
+             onmouseover="this.style.borderColor='#9d174d';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(157,23,77,.12)'"
+             onmouseout="this.style.borderColor='#e4ddd4';this.style.transform='none';this.style.boxShadow='0 2px 8px rgba(46,36,29,.05)'">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+            <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#9d174d,#c0392b);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🔥</div>
+            <div>
+              <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#7a6a5e;margin-bottom:2px;">Step 4 · Deep Learning</div>
+              <div style="font-family:'Lora',serif;font-size:14px;font-weight:700;color:#2e241d;">Andrej Karpathy</div>
+            </div>
+          </div>
+          <p style="font-size:12px;color:#5c4d43;line-height:1.6;margin:0;">Build GPT from scratch. The single best resource for understanding how neural networks actually work at a deep level.</p>
+          <div style="margin-top:10px;display:inline-flex;align-items:center;gap:5px;font-size:10px;font-family:'DM Mono',monospace;color:#9d174d;">Watch now ↗</div>
+        </div>
+      </a>
+
+      <!-- 5 -->
+      <a href="https://www.youtube.com/@CodeEmporium" target="_blank" style="text-decoration:none;">
+        <div style="background:#fff;border:1.5px solid #e4ddd4;border-radius:14px;padding:20px;transition:all .2s;box-shadow:0 2px 8px rgba(46,36,29,.05);"
+             onmouseover="this.style.borderColor='#3730a3';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(55,48,163,.12)'"
+             onmouseout="this.style.borderColor='#e4ddd4';this.style.transform='none';this.style.boxShadow='0 2px 8px rgba(46,36,29,.05)'">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+            <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#3730a3,#6d28d9);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">⚡</div>
+            <div>
+              <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#7a6a5e;margin-bottom:2px;">Step 5a · Transformers</div>
+              <div style="font-family:'Lora',serif;font-size:14px;font-weight:700;color:#2e241d;">CodeEmporium</div>
+            </div>
+          </div>
+          <p style="font-size:12px;color:#5c4d43;line-height:1.6;margin:0;">Deep dives into Transformers, attention mechanisms, and LLM internals. Technical but accessible.</p>
+          <div style="margin-top:10px;display:inline-flex;align-items:center;gap:5px;font-size:10px;font-family:'DM Mono',monospace;color:#3730a3;">Watch now ↗</div>
+        </div>
+      </a>
+
+      <!-- 6 -->
+      <a href="https://www.youtube.com/@SebastianRaschka" target="_blank" style="text-decoration:none;">
+        <div style="background:#fff;border:1.5px solid #e4ddd4;border-radius:14px;padding:20px;transition:all .2s;box-shadow:0 2px 8px rgba(46,36,29,.05);"
+             onmouseover="this.style.borderColor='#0369a1';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(3,105,161,.12)'"
+             onmouseout="this.style.borderColor='#e4ddd4';this.style.transform='none';this.style.boxShadow='0 2px 8px rgba(46,36,29,.05)'">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+            <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#0369a1,#0f766e);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">⚡</div>
+            <div>
+              <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#7a6a5e;margin-bottom:2px;">Step 5b · LLMs</div>
+              <div style="font-family:'Lora',serif;font-size:14px;font-weight:700;color:#2e241d;">Sebastian Raschka</div>
+            </div>
+          </div>
+          <p style="font-size:12px;color:#5c4d43;line-height:1.6;margin:0;">Author of "Build LLMs from Scratch". Research-level clarity on how large language models are trained and fine-tuned.</p>
+          <div style="margin-top:10px;display:inline-flex;align-items:center;gap:5px;font-size:10px;font-family:'DM Mono',monospace;color:#0369a1;">Watch now ↗</div>
+        </div>
+      </a>
+
+      <!-- 7 -->
+      <a href="https://www.youtube.com/@DeepLearningAI" target="_blank" style="text-decoration:none;">
+        <div style="background:#fff;border:1.5px solid #e4ddd4;border-radius:14px;padding:20px;transition:all .2s;box-shadow:0 2px 8px rgba(46,36,29,.05);"
+             onmouseover="this.style.borderColor='#166534';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(22,101,52,.12)'"
+             onmouseout="this.style.borderColor='#e4ddd4';this.style.transform='none';this.style.boxShadow='0 2px 8px rgba(46,36,29,.05)'">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+            <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#166534,#0d7a5f);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🚀</div>
+            <div>
+              <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#7a6a5e;margin-bottom:2px;">Step 6 · GenAI</div>
+              <div style="font-family:'Lora',serif;font-size:14px;font-weight:700;color:#2e241d;">DeepLearning.AI</div>
+            </div>
+          </div>
+          <p style="font-size:12px;color:#5c4d43;line-height:1.6;margin:0;">Andrew Ng's GenAI courses — prompt engineering, RAG, LangChain. Real-world GenAI project tutorials.</p>
+          <div style="margin-top:10px;display:inline-flex;align-items:center;gap:5px;font-size:10px;font-family:'DM Mono',monospace;color:#166534;">Watch now ↗</div>
+        </div>
+      </a>
+
+      <!-- 8 -->
+      <a href="https://www.youtube.com/@freecodecamp" target="_blank" style="text-decoration:none;">
+        <div style="background:#fff;border:1.5px solid #e4ddd4;border-radius:14px;padding:20px;transition:all .2s;box-shadow:0 2px 8px rgba(46,36,29,.05);"
+             onmouseover="this.style.borderColor='#c2410c';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(194,65,12,.12)'"
+             onmouseout="this.style.borderColor='#e4ddd4';this.style.transform='none';this.style.boxShadow='0 2px 8px rgba(46,36,29,.05)'">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+            <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#c2410c,#b45309);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🤖</div>
+            <div>
+              <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#7a6a5e;margin-bottom:2px;">Step 7 · AI Agents</div>
+              <div style="font-family:'Lora',serif;font-size:14px;font-weight:700;color:#2e241d;">freeCodeCamp</div>
+            </div>
+          </div>
+          <p style="font-size:12px;color:#5c4d43;line-height:1.6;margin:0;">LangChain, RAG pipelines, AutoGPT, and AI agent projects. Full-length courses with complete source code.</p>
+          <div style="margin-top:10px;display:inline-flex;align-items:center;gap:5px;font-size:10px;font-family:'DM Mono',monospace;color:#c2410c;">Watch now ↗</div>
+        </div>
+      </a>
+
+    </div><!-- /grid -->
+
+    <!-- Order Banner -->
+    <div style="margin-top:32px;background:linear-gradient(135deg,#fff8f0,#fef3c7);border:1.5px solid #fcd34d;border-radius:14px;padding:20px 24px;display:flex;align-items:center;gap:14px;">
+      <div style="font-size:22px;flex-shrink:0;">💡</div>
+      <div>
+        <div style="font-family:'Lora',serif;font-size:14px;font-weight:700;color:#92400e;margin-bottom:4px;">Follow this order. Stay consistent.</div>
+        <div style="font-size:12px;color:#78350f;line-height:1.7;">
+          3Blue1Brown → freeCodeCamp → Codebasics → Andrej Karpathy → CodeEmporium &amp; Sebastian Raschka → DeepLearning.AI → freeCodeCamp (Agents)
+        </div>
+      </div>
+    </div>
+
+    <!-- Attribution -->
+    <div style="margin-top:24px;text-align:center;font-family:'DM Mono',monospace;font-size:10px;color:#b0a398;letter-spacing:.08em;">
+      Shared via <a href="https://superprofile.bio" target="_blank" style="color:#1a56c4;text-decoration:none;">@SuperProfile.bio</a> · Build in public · Stay consistent 💯
+    </div>
+
+  </div>
+</section>
+
+<script>
+// ═══════════════════════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════════════════════
+const STAGE_IDS = ['stage00','stage01','stage02','stage03','stage04','stage05','stage06','stage07','stage08','stage09','stage10'];
+
+// ─── UTILITIES ──────────────────────────────────────
+function todayStr(){ return new Date().toISOString().split('T')[0]; }
+function fmtDate(d){ return d.toISOString().split('T')[0]; }
+function yesterday(){ return fmtDate(new Date(Date.now()-86400000)); }
+function getKV(k){ try{return JSON.parse(localStorage.getItem(k));}catch(e){return null;} }
+function setKV(k,v){ localStorage.setItem(k,JSON.stringify(v)); }
+
+// ─── STREAK LOGIC ───────────────────────────────────
+function updateStreak(){
+  const today = todayStr();
+  const yest  = yesterday();
+  let streak  = parseInt(getKV('kinesis_streak_current'),10)||0;
+  const last  = getKV('kinesis_streak_last_active');
+
+  if(last === today) return; // already updated today
+  if(last === yest){
+    streak++;
+  } else if(last !== today){
+    streak = 1;
+  }
+  setKV('kinesis_streak_current', streak);
+  setKV('kinesis_streak_last_active', today);
+  // Set start date once
+  if(!getKV('kinesis_start_date')) setKV('kinesis_start_date', today);
+}
+
+function computeStreak(){
+  let streak=0;
+  const now=new Date(); now.setHours(0,0,0,0);
+  for(let i=0;i<365;i++){
+    const ds=fmtDate(new Date(now.getTime()-i*86400000));
+    const v=parseInt(localStorage.getItem('kinesis_day_'+ds),10)||0;
+    if(v>0) streak++;
+    else if(i>0) break;
+  }
+  return streak;
+}
+
+// ─── INCREMENT DAY COUNTER ──────────────────────────
+function incDay(){
+  const k='kinesis_day_'+todayStr();
+  const cur=parseInt(localStorage.getItem(k),10)||0;
+  localStorage.setItem(k, cur+1);
+}
+function decDay(){
+  const k='kinesis_day_'+todayStr();
+  const cur=parseInt(localStorage.getItem(k),10)||0;
+  if(cur>0) localStorage.setItem(k, cur-1);
+}
+
+// ─── TASK KEY ───────────────────────────────────────
+function taskKey(stageId, idx){ return `kinesis_task_${stageId}_${idx}`; }
+function isChecked(stageId, idx){ return localStorage.getItem(taskKey(stageId,idx))==='true'; }
+
+// ─── TOPBAR ─────────────────────────────────────────
+function refreshNav(){
+  const s=computeStreak();
+  document.getElementById('navStreak').textContent=s;
+  document.getElementById('navDate').textContent=new Date().toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'});
+}
+
+// ─── TODAY'S PANEL ──────────────────────────────────
+function refreshTodayPanel(){
+  const today=todayStr();
+  const count=parseInt(localStorage.getItem('kinesis_day_'+today),10)||0;
+  let total=0;
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k&&k.startsWith('kinesis_task_')) total++;
+  }
+  document.getElementById('tpDone').textContent=count;
+  document.getElementById('tpTotal').textContent=total;
+  const pct=total>0?Math.min(100,Math.round((count/total)*100)):0;
+  document.getElementById('tpBarFill').style.width=pct+'%';
+}
+
+// ─── STAGE BUTTON STATE ─────────────────────────────
+function refreshStageBtn(stageId){
+  const btn=document.getElementById('kn-btn-'+stageId);
+  if(!btn) return;
+  const lis=[...document.querySelectorAll(`[data-stage="${stageId}"]`)];
+  if(lis.length===0){btn.disabled=true;return;}
+  const done=lis.filter(li=>li.classList.contains('checked')).length;
+  const allDone=(done===lis.length);
+  btn.disabled=!allDone;
+  if(allDone) btn.classList.add('complete');
+  else btn.classList.remove('complete');
+  btn.textContent=allDone?`✅ Stage Complete! (${done}/${lis.length})`:`Mark Stage Complete (${done}/${lis.length} done)`;
+}
+
+// ─── CHECKBOX CLICK ─────────────────────────────────
+function handleCheck(li, stageId, idx){
+  const wasChecked=li.classList.contains('checked');
+  li.classList.toggle('checked');
+  const nowChecked=!wasChecked;
+  localStorage.setItem(taskKey(stageId,idx), nowChecked?'true':'false');
+  if(nowChecked){ incDay(); updateStreak(); }
+  else { decDay(); }
+  refreshNav();
+  refreshTodayPanel();
+  refreshStageBtn(stageId);
+}
+
+// ─── RESET TODAY ────────────────────────────────────
+function confirmReset(){
+  if(!confirm('Clear all task ticks from TODAY only? Your task history from other days stays intact.')) return;
+  const today=todayStr();
+  localStorage.removeItem('kinesis_day_'+today);
+  // Uncheck all checkboxes (we can't know which were ticked "today" without more metadata, so we ask user to re-tick)
+  // Show message
+  alert('Today\'s tick count has been reset. You can re-tick your tasks.');
+  location.reload();
+}
+
+// ─── CONVERT <li> TO CHECKBOXES ─────────────────────
+function initCheckboxes(){
+  // Find all stages by their stage div data-id attributes
+  const stageEls=document.querySelectorAll('.stage');
+  stageEls.forEach((stageEl, si)=>{
+    // Try to find stage id; we assign based on order if not present
+    const stageId = STAGE_IDS[si] || `stage${String(si).padStart(2,'0')}`;
+    stageEl.setAttribute('data-stageid', stageId);
+
+    const allLis=[...stageEl.querySelectorAll('.box ul li')];
+    allLis.forEach((li, idx)=>{
+      const text=li.textContent.trim();
+      const checked=isChecked(stageId,idx);
+      // Rebuild li
+      li.className='kn-task-li'+(checked?' checked':'');
+      li.setAttribute('data-stage', stageId);
+      li.setAttribute('data-idx', idx);
+      li.innerHTML=`
+        <div class="kn-cb"></div>
+        <span class="kn-task-text">${text}</span>
+        <span class="kn-check-badge">✓ done</span>`;
+      li.onclick=function(){ handleCheck(this, stageId, idx); };
+    });
+
+    // Add "Mark Stage Complete" button at bottom of s-content
+    const content=stageEl.querySelector('.s-content');
+    if(content){
+      const btn=document.createElement('button');
+      btn.className='kn-stage-btn';
+      btn.id='kn-btn-'+stageId;
+      btn.onclick=function(e){
+        e.stopPropagation();
+        alert(`Stage ${stageId} marked as reference — keep ticking daily tasks!`);
+      };
+      content.appendChild(btn);
+      refreshStageBtn(stageId);
+    }
+  });
+}
+
+// ─── LOAD ROADMAP CONTENT ───────────────────────────
+function loadRoadmap(){
+  fetch('roadmap_v4.html')
+    .then(r=>{
+      if(!r.ok) throw new Error('Could not load roadmap_v4.html: '+r.status);
+      return r.text();
+    })
+    .then(html=>{
+      const parser=new DOMParser();
+      const doc=parser.parseFromString(html,'text/html');
+
+      // Inject the original <style> from roadmap_v4.html
+      const origStyle=doc.querySelector('style');
+      if(origStyle){
+        const s=document.createElement('style');
+        s.textContent=origStyle.textContent;
+        document.head.appendChild(s);
+      }
+
+      // Inject the original Google Fonts link
+      const origFonts=doc.querySelector('link[href*="fonts.googleapis"]');
+      if(origFonts){
+        const l=document.createElement('link');
+        l.rel='stylesheet';
+        l.href=origFonts.href;
+        document.head.appendChild(l);
+      }
+
+      // Inject body content
+      const wrap=doc.querySelector('.wrap');
+      const container=document.getElementById('roadmap-content');
+      container.className=''; // remove loading class
+      if(wrap){
+        container.appendChild(document.adoptNode(wrap));
+      } else {
+        // Fallback: inject full body
+        container.innerHTML=doc.body.innerHTML;
+      }
+
+      // Re-attach the original toggle functions from roadmap_v4
+      window.tog=function(el){ el.classList.toggle('open'); };
+      window.togBranch=function(hdr){ event.stopPropagation(); hdr.classList.toggle('open'); };
+
+      // Now init checkboxes
+      initCheckboxes();
+      refreshNav();
+      refreshTodayPanel();
+    })
+    .catch(err=>{
+      const container=document.getElementById('roadmap-content');
+      container.className='';
+      container.innerHTML=`<div style="padding:48px;text-align:center;font-family:monospace;color:#c0392b;">
+        <h2>⚠️ Could not load roadmap</h2>
+        <p style="margin-top:12px;">${err.message}</p>
+        <p style="margin-top:8px;color:#7a6a5e;">Make sure <strong>roadmap_v4.html</strong> is in the same folder.</p>
+        <p style="margin-top:16px;"><a href="roadmap_v4.html" style="color:#1a56c4;">Open roadmap_v4.html directly →</a></p>
+      </div>`;
+    });
+}
+
+// ─── INIT ────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded',()=>{
+  refreshNav();
+  loadRoadmap();
+});
+</script>
+</body>
+</html>
