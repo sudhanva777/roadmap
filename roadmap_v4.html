@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your DS → GenAI Learning Blueprint</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=DM+Mono:wght@400;500&family=Nunito:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #f7f4ef;
+  --bg2:     #f0ece5;
+  --surface: #ffffff;
+  --card:    #faf8f5;
+  --border:  #e4ddd4;
+  --border2: #cec4b8;
+  --text:    #2e241d;
+  --muted:   #7a6a5e;
+  --muted2:  #5c4d43;
+
+  --c1:  #b45309;
+  --c2:  #0d7a5f;
+  --c3:  #c0392b;
+  --c4:  #1a56c4;
+  --c5:  #6d28d9;
+  --c6:  #c2410c;
+  --c7:  #9d174d;
+  --c8:  #0f766e;
+  --c9:  #3730a3;
+  --c10: #0369a1;
+  --c11: #166534;
+
+  --sup:   #0d7a5f;
+  --unsup: #6d28d9;
+  --semi:  #c2410c;
+  --rl:    #c0392b;
+  --deeprl:#9d174d;
+
+  --yt: #cc0000;
+  --yt-bg: #fff5f5;
+  --yt-border: #ffcdd2;
+
+  --milestone: #1a56c4;
+  --ms-bg: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Nunito',sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(180,83,9,.04) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(26,86,196,.04) 0%, transparent 50%);
+  pointer-events:none;z-index:0;
+}
+
+.wrap{max-width:1080px;margin:0 auto;padding:56px 20px;position:relative;z-index:1;}
+
+/* ── TEACHER BANNER ── */
+.teacher-banner{
+  background:linear-gradient(135deg, #fff8f0 0%, #fef3e2 50%, #fff0f8 100%);
+  border:1.5px solid var(--border);border-radius:18px;
+  padding:28px 32px;margin-bottom:48px;
+  display:flex;align-items:flex-start;gap:18px;
+  box-shadow:0 4px 24px rgba(46,36,29,.07);
+  animation:fadeD .7s ease both;
+}
+.teacher-avatar{
+  width:58px;height:58px;border-radius:50%;
+  background:linear-gradient(135deg,#fbbf24,#f87171);
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;flex-shrink:0;
+  box-shadow:0 4px 12px rgba(251,191,36,.3);
+}
+.teacher-text h3{
+  font-family:'Lora',serif;font-size:17px;font-weight:700;
+  color:var(--c6);margin-bottom:6px;
+}
+.teacher-text p{font-size:13.5px;color:var(--muted2);line-height:1.7;font-weight:400;}
+.teacher-text p strong{color:var(--text);font-weight:700;}
+
+/* ── HEADER ── */
+.hdr{text-align:center;margin-bottom:56px;animation:fadeD .7s ease both;}
+.hdr-tag{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--c4);text-transform:uppercase;margin-bottom:14px;display:block;}
+.hdr h1{font-family:'Lora',serif;font-size:clamp(30px,5vw,58px);font-weight:700;line-height:1.1;margin-bottom:16px;color:var(--text);}
+.hdr h1 .dim{color:var(--muted);}
+.hdr h1 .hi{color:var(--c4);}
+.hdr p{color:var(--muted);font-size:14.5px;font-weight:400;max-width:500px;margin:0 auto 24px;line-height:1.7;}
+.meta{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;}
+.meta span{font-family:'DM Mono',monospace;font-size:10.5px;padding:5px 13px;border:1px solid var(--border2);border-radius:4px;color:var(--muted);background:var(--surface);}
+.meta .hi-tag{border-color:var(--c4);color:var(--c4);background:rgba(26,86,196,.06);}
+
+/* ── STAGE SPINE ── */
+.stages{position:relative;display:flex;flex-direction:column;gap:0;}
+.stages::before{
+  content:'';position:absolute;
+  left:50px;top:0;bottom:0;width:1.5px;
+  background:linear-gradient(to bottom,transparent,var(--border) 4%,var(--border) 96%,transparent);
+}
+
+/* ── STAGE ROW ── */
+.stage{display:grid;grid-template-columns:100px 1fr;gap:0;animation:fadeU .5s ease both;}
+.stage-num{display:flex;flex-direction:column;align-items:center;padding-top:26px;}
+.dot{
+  width:40px;height:40px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'DM Mono',monospace;font-size:12px;font-weight:500;
+  border:2px solid currentColor;
+  background:var(--surface);position:relative;z-index:2;
+  transition:transform .25s,box-shadow .25s;flex-shrink:0;
+}
+.stage:hover .dot{transform:scale(1.1);box-shadow:0 0 0 6px rgba(0,0,0,.06);}
+.spine{width:1.5px;flex:1;min-height:16px;background:var(--border);margin-top:4px;}
+
+.stage-body{padding:20px 0 20px 28px;}
+
+/* ── STAGE HEADER ── */
+.s-hdr{
+  display:flex;align-items:center;gap:10px;
+  cursor:pointer;user-select:none;
+}
+.s-icon{
+  width:40px;height:40px;border-radius:10px;
+  border:1.5px solid var(--border);background:var(--surface);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;transition:transform .3s;
+  box-shadow:0 2px 6px rgba(46,36,29,.06);
+}
+.stage:hover .s-icon{transform:rotate(-5deg) scale(1.06);}
+.s-meta{flex:1;}
+.s-title{font-family:'Lora',serif;font-size:17px;font-weight:700;}
+.s-sub{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:2px;}
+.s-dur{font-family:'DM Mono',monospace;font-size:10px;padding:4px 10px;border:1.5px solid var(--border);border-radius:20px;color:var(--muted);flex-shrink:0;background:var(--surface);}
+.tog{
+  width:28px;height:28px;border-radius:6px;
+  border:1.5px solid var(--border);background:var(--surface);
+  color:var(--muted);display:flex;align-items:center;
+  justify-content:center;font-size:16px;cursor:pointer;
+  transition:transform .25s,border-color .25s;flex-shrink:0;
+}
+.stage.open .tog{transform:rotate(45deg);}
+
+/* ── CONTENT ── */
+.s-content{display:none;margin-top:16px;}
+.stage.open .s-content{display:block;animation:expand .3s ease;}
+
+/* ── GRIDS ── */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;}
+.full{grid-column:1/-1;}
+
+.box{
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:10px;padding:13px;
+  box-shadow:0 2px 8px rgba(46,36,29,.04);
+}
+.blbl{
+  font-family:'DM Mono',monospace;font-size:9px;
+  letter-spacing:2px;text-transform:uppercase;
+  margin-bottom:9px;display:flex;align-items:center;gap:5px;
+}
+.blbl::before{content:'';width:5px;height:5px;border-radius:50%;display:inline-block;background:currentColor;}
+.blbl.t{color:var(--c5);}
+.blbl.tp{color:var(--c4);}
+.blbl.a{color:var(--c1);}
+.blbl.l{color:var(--c3);}
+.blbl.p{color:var(--c2);}
+.blbl.rl-c{color:var(--rl);}
+.blbl.drl-c{color:var(--deeprl);}
+
+.box ul{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.box ul li{font-size:12px;color:var(--muted2);padding-left:14px;position:relative;line-height:1.45;font-weight:400;}
+.box ul li::before{content:'›';position:absolute;left:2px;color:var(--border2);font-size:13px;}
+
+/* ── ML TREE ── */
+.ml-tree{display:flex;flex-direction:column;gap:12px;margin-bottom:10px;}
+.ml-branch{border:1.5px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface);}
+.branch-hdr{
+  padding:11px 14px;display:flex;align-items:center;gap:10px;
+  cursor:pointer;user-select:none;
+  border-bottom:1px solid transparent;transition:background .2s;
+}
+.branch-hdr:hover{background:rgba(0,0,0,.02);}
+.branch-hdr.open{border-bottom-color:var(--border);}
+.branch-tag{
+  font-family:'DM Mono',monospace;font-size:10px;
+  font-weight:500;padding:3px 10px;border-radius:4px;
+  letter-spacing:1px;flex-shrink:0;
+}
+.branch-title{font-family:'Lora',serif;font-size:14px;font-weight:700;flex:1;}
+.branch-desc{font-size:11px;color:var(--muted);font-weight:400;}
+.branch-tog{font-size:12px;color:var(--muted);transition:transform .25s;margin-left:6px;}
+.branch-hdr.open .branch-tog{transform:rotate(90deg);}
+
+.sup .branch-hdr{background:rgba(13,122,95,.04);}
+.sup .branch-tag{background:rgba(13,122,95,.1);color:var(--sup);border:1px solid rgba(13,122,95,.2);}
+.sup .branch-title{color:var(--sup);}
+.unsup .branch-hdr{background:rgba(109,40,217,.04);}
+.unsup .branch-tag{background:rgba(109,40,217,.1);color:var(--unsup);border:1px solid rgba(109,40,217,.2);}
+.unsup .branch-title{color:var(--unsup);}
+.semi .branch-hdr{background:rgba(194,65,12,.04);}
+.semi .branch-tag{background:rgba(194,65,12,.1);color:var(--semi);border:1px solid rgba(194,65,12,.2);}
+.semi .branch-title{color:var(--semi);}
+
+.branch-body{display:none;padding:14px;}
+.branch-hdr.open + .branch-body{display:block;animation:expand .25s ease;}
+
+/* model cards */
+.model-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+.model-card{
+  background:var(--card);border:1.5px solid var(--border);
+  border-radius:8px;padding:10px 12px;flex:1;min-width:160px;
+}
+.model-name{font-family:'Lora',serif;font-size:12px;font-weight:700;margin-bottom:4px;color:var(--text);}
+.model-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px;}
+.mtag{
+  font-family:'DM Mono',monospace;font-size:9px;
+  padding:2px 7px;border-radius:3px;border:1px solid var(--border2);
+  color:var(--muted);background:var(--surface);
+}
+.model-desc{font-size:11px;color:var(--muted);line-height:1.4;font-weight:400;}
+
+/* chips */
+.chip-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+.chip{
+  font-size:11px;padding:4px 11px;border-radius:5px;
+  font-family:'DM Mono',monospace;border:1.5px solid var(--border2);
+  color:var(--muted2);background:var(--surface);
+  transition:all .2s;
+}
+.chip:hover{background:var(--card);}
+.chip.sup{color:var(--sup);border-color:rgba(13,122,95,.25);background:rgba(13,122,95,.05);}
+.chip.unsup{color:var(--unsup);border-color:rgba(109,40,217,.25);background:rgba(109,40,217,.05);}
+.chip.dl{color:var(--c4);border-color:rgba(26,86,196,.25);background:rgba(26,86,196,.05);}
+.chip.cv{color:var(--c8);border-color:rgba(15,118,110,.25);background:rgba(15,118,110,.05);}
+.chip.nlp{color:var(--c9);border-color:rgba(55,48,163,.25);background:rgba(55,48,163,.05);}
+
+/* project box */
+.proj{
+  display:flex;align-items:flex-start;gap:11px;
+  background:rgba(13,122,95,.05);border:1.5px solid rgba(13,122,95,.2);
+  border-radius:10px;padding:13px;margin-top:10px;
+}
+.proj-icon{font-size:20px;flex-shrink:0;margin-top:1px;}
+.proj-title{font-family:'Lora',serif;font-size:12px;font-weight:700;margin-bottom:3px;color:var(--c2);}
+.proj-desc{font-size:11.5px;color:var(--muted2);line-height:1.5;font-weight:400;}
+
+/* section label */
+.sec-lbl{
+  font-family:'DM Mono',monospace;font-size:9px;
+  letter-spacing:2px;text-transform:uppercase;
+  color:var(--muted);margin-bottom:8px;margin-top:14px;
+  display:flex;align-items:center;gap:8px;
+}
+.sec-lbl::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* ── YOUTUBE RESOURCES ── */
+.yt-section{
+  margin-top:14px;
+  background:var(--yt-bg);border:1.5px solid var(--yt-border);
+  border-radius:12px;padding:14px;
+}
+.yt-header{
+  display:flex;align-items:center;gap:8px;
+  margin-bottom:12px;
+  font-family:'DM Mono',monospace;font-size:9px;
+  letter-spacing:2px;text-transform:uppercase;color:var(--yt);
+}
+.yt-header svg{flex-shrink:0;}
+.yt-grid{display:flex;flex-wrap:wrap;gap:8px;}
+.yt-card{
+  display:flex;align-items:flex-start;gap:8px;
+  background:var(--surface);border:1px solid var(--yt-border);
+  border-radius:8px;padding:10px 12px;flex:1;min-width:200px;
+  text-decoration:none;color:inherit;
+  transition:border-color .2s,box-shadow .2s;
+  cursor:pointer;
+}
+.yt-card:hover{border-color:var(--yt);box-shadow:0 2px 10px rgba(204,0,0,.1);}
+.yt-thumb{
+  width:36px;height:36px;border-radius:6px;
+  background:var(--yt);display:flex;align-items:center;
+  justify-content:center;flex-shrink:0;
+}
+.yt-thumb svg{width:16px;height:16px;fill:white;}
+.yt-info{}
+.yt-channel{font-family:'DM Mono',monospace;font-size:9px;color:var(--yt);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;}
+.yt-title{font-size:11.5px;font-weight:600;color:var(--text);line-height:1.3;margin-bottom:2px;}
+.yt-lang{font-size:10px;color:var(--muted);font-style:italic;}
+
+/* ── CAREER MILESTONE ── */
+.milestone{
+  position:relative;margin:32px 0;z-index:2;
+  animation:fadeU .5s ease both;
+}
+.milestone-inner{
+  background:var(--ms-bg);
+  border:2px solid rgba(26,86,196,.2);
+  border-radius:16px;padding:22px 28px;
+  display:flex;align-items:center;gap:16px;
+  box-shadow:0 4px 20px rgba(26,86,196,.12);
+  position:relative;overflow:hidden;
+}
+.milestone-inner::before{
+  content:'';position:absolute;top:0;right:0;
+  width:200px;height:100%;
+  background:linear-gradient(90deg, transparent, rgba(26,86,196,.04));
+}
+.ms-badge{
+  width:52px;height:52px;border-radius:50%;
+  background:var(--c4);display:flex;align-items:center;
+  justify-content:center;font-size:22px;flex-shrink:0;
+  box-shadow:0 4px 14px rgba(26,86,196,.3);
+}
+.ms-text{}
+.ms-tag{
+  font-family:'DM Mono',monospace;font-size:9px;
+  letter-spacing:3px;text-transform:uppercase;color:var(--c4);
+  margin-bottom:4px;display:block;
+}
+.ms-title{font-family:'Lora',serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.ms-desc{font-size:12.5px;color:var(--muted2);line-height:1.5;font-weight:400;}
+.ms-skills{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
+.ms-skill{
+  font-family:'DM Mono',monospace;font-size:9.5px;
+  padding:3px 9px;border-radius:4px;
+  background:rgba(26,86,196,.08);border:1px solid rgba(26,86,196,.2);
+  color:var(--c4);
+}
+
+/* colour themes */
+.st1 .dot{color:var(--c1);border-color:var(--c1);} .st1 .s-title{color:var(--c1);}
+.st2 .dot{color:var(--c2);border-color:var(--c2);} .st2 .s-title{color:var(--c2);}
+.st3 .dot{color:var(--c3);border-color:var(--c3);} .st3 .s-title{color:var(--c3);}
+.st4 .dot{color:var(--c4);border-color:var(--c4);} .st4 .s-title{color:var(--c4);}
+.st5 .dot{color:var(--c5);border-color:var(--c5);} .st5 .s-title{color:var(--c5);}
+.st6 .dot{color:var(--c6);border-color:var(--c6);} .st6 .s-title{color:var(--c6);}
+.st7 .dot{color:var(--c7);border-color:var(--c7);} .st7 .s-title{color:var(--c7);}
+.st8 .dot{color:var(--c8);border-color:var(--c8);} .st8 .s-title{color:var(--c8);}
+.st9 .dot{color:var(--c9);border-color:var(--c9);} .st9 .s-title{color:var(--c9);}
+.st10 .dot{color:var(--c10);border-color:var(--c10);} .st10 .s-title{color:var(--c10);}
+.st11 .dot{color:var(--c11);border-color:var(--c11);box-shadow:0 0 0 4px rgba(22,101,52,.12);} .st11 .s-title{color:var(--c11);}
+
+/* animation delays */
+.stage:nth-child(n){animation-delay:calc(.05s * var(--i, 1));}
+
+/* bottom */
+.btm{
+  margin-top:64px;padding:30px 32px;
+  border:1.5px solid var(--border);border-radius:16px;
+  background:var(--surface);text-align:center;
+  animation:fadeU .7s ease .6s both;
+  box-shadow:0 4px 20px rgba(46,36,29,.06);
+}
+.btm h3{font-family:'Lora',serif;font-size:22px;font-weight:700;color:var(--c11);margin-bottom:6px;}
+.btm p{color:var(--muted);font-size:13px;margin-bottom:20px;line-height:1.6;}
+.tools{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;}
+.ttag{
+  font-family:'DM Mono',monospace;font-size:10px;
+  padding:4px 12px;border:1.5px solid var(--border);
+  border-radius:4px;color:var(--muted);transition:all .2s;cursor:default;
+  background:var(--card);
+}
+.ttag:hover{border-color:var(--c4);color:var(--c4);background:rgba(26,86,196,.05);}
+
+/* innomatics note */
+.inno-note{
+  background:rgba(180,83,9,.05);border:1.5px solid rgba(180,83,9,.2);
+  border-radius:8px;padding:10px 13px;margin-top:10px;
+  font-size:11.5px;color:var(--c1);line-height:1.5;
+  display:flex;align-items:flex-start;gap:7px;
+}
+.inno-note::before{content:'📌';flex-shrink:0;}
+
+@keyframes fadeD{from{opacity:0;transform:translateY(-18px)}to{opacity:1;transform:none}}
+@keyframes fadeU{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes expand{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+
+@media(max-width:640px){
+  .grid2,.grid3{grid-template-columns:1fr;}
+  .stages::before{left:28px;}
+  .stage{grid-template-columns:56px 1fr;}
+  .dot{width:32px;height:32px;font-size:10px;}
+  .model-card{min-width:130px;}
+  .yt-card{min-width:180px;}
+  .milestone-inner{flex-direction:column;text-align:center;}
+  .teacher-banner{flex-direction:column;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- TEACHER BANNER -->
+<div class="teacher-banner">
+  <div class="teacher-avatar">🧑‍🏫</div>
+  <div class="teacher-text">
+    <h3>Hey! I'm your personal Math → GenAI mentor 👋</h3>
+    <p>
+      This roadmap starts from <strong>Core Math</strong> — the real foundation of AI — then moves through every stage to GenAI Engineer.
+      Each stage builds on the last. <strong>Don't skip ahead.</strong> Every section ends with a real project. 
+      The milestones 🏅 tell you exactly when you're job-ready. Track your progress and celebrate every win!
+    </p>
+  </div>
+</div>
+
+<!-- AI REALITY CHECK BANNER -->
+<div style="background:linear-gradient(135deg,#fff7ed 0%,#fef3c7 50%,#fdf2f8 100%);border:1.5px solid #fcd34d;border-radius:16px;padding:24px 28px;margin-bottom:36px;box-shadow:0 4px 20px rgba(180,83,9,.08);animation:fadeD .7s ease .1s both;">
+  <div style="display:flex;align-items:flex-start;gap:14px;">
+    <div style="font-size:28px;flex-shrink:0;">⚡</div>
+    <div>
+      <div style="font-family:'Lora',serif;font-size:15px;font-weight:700;color:#92400e;margin-bottom:8px;">Will AI replace me? — The honest answer</div>
+      <p style="font-size:13px;color:#78350f;line-height:1.75;font-weight:400;">
+        AI replaces <strong>tasks, not ambitious people like you.</strong> Average coders doing copy-paste work? Yes, at risk. 
+        But <strong>AI Engineers, ML Engineers, Data Scientists, AI Product Builders?</strong> — they are being hired like crazy by OpenAI, Google, NVIDIA right now.
+        The truth no one tells you: <strong>AI is not replacing engineers who evolve — it's multiplying their power 10x.</strong>
+        You're not just learning Python. You're building systems that replace jobs. That puts you in the top 1% thinking already.
+        <strong style="color:#92400e;">But only if you don't skip the math.</strong>
+      </p>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;">
+        <span style="font-family:'DM Mono',monospace;font-size:10px;padding:3px 10px;border-radius:4px;background:rgba(192,65,12,.08);border:1px solid rgba(192,65,12,.2);color:#9a3412;">❌ Basic coders → replaced</span>
+        <span style="font-family:'DM Mono',monospace;font-size:10px;padding:3px 10px;border-radius:4px;background:rgba(13,122,95,.08);border:1px solid rgba(13,122,95,.2);color:#065f46;">✅ AI Engineers → multiplied in power</span>
+        <span style="font-family:'DM Mono',monospace;font-size:10px;padding:3px 10px;border-radius:4px;background:rgba(13,122,95,.08);border:1px solid rgba(13,122,95,.2);color:#065f46;">✅ You → building AI systems, not running from them</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="hdr">
+  <span class="hdr-tag">// your complete learning blueprint · math → genai</span>
+  <h1><span class="dim">Math</span> to<br><span class="hi">GenAI Engineer</span></h1>
+  <p>12 stages · Core Math → Excel → Python → ML → GenAI · Every algorithm, every tool, hand-picked YouTube resources with career milestones.</p>
+  <div class="meta">
+    <span>12 stages</span>
+    <span class="hi-tag">~12–14 months</span>
+    <span>2 hrs / day</span>
+    <span>Math → GenAI</span>
+    <span>Innomatics Curriculum</span>
+  </div>
+</div>
+
+<!-- STAGES -->
+<div class="stages">
+
+<!-- ══ 00 — CORE MATH ══ -->
+<div class="stage st1" onclick="tog(this)" style="--i:1">
+  <div class="stage-num"><div class="dot" style="color:#7c3aed;border-color:#7c3aed;">00</div><div class="spine"></div></div>
+  <div class="stage-body">
+    <div class="s-hdr">
+      <div class="s-icon">∑</div>
+      <div class="s-meta"><div class="s-title" style="color:#7c3aed;">Core Math for AI</div><div class="s-sub">The real foundation — learn parallel to early stages, not all at once</div></div>
+      <div class="s-dur">Ongoing</div><div class="tog">+</div>
+    </div>
+    <div class="s-content">
+
+      <!-- Reality check note -->
+      <div style="background:rgba(124,58,237,.05);border:1.5px solid rgba(124,58,237,.2);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
+        <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#7c3aed;margin-bottom:6px;">⚡ How to approach this</div>
+        <p style="font-size:12px;color:var(--muted2);line-height:1.6;">You don't need PhD-level math. You need <strong>conceptual clarity + ability to apply.</strong>
+        Learn Phase 1 while doing Stage 01–02. Learn Phase 2 while doing Stage 03–05. Phase 3 when you hit Deep Learning. 
+        <strong>Math integrates with coding — you'll understand why models work, not just how to run them.</strong></p>
+      </div>
+
+      <!-- Phase 1 -->
+      <div class="sec-lbl">Phase 1 — Start Immediately (alongside Excel & Python)</div>
+      <div class="ml-tree">
+
+        <div class="ml-branch" style="border-color:rgba(124,58,237,.2);">
+          <div class="branch-hdr" onclick="togBranch(this)" style="background:rgba(124,58,237,.04);">
+            <span class="branch-tag" style="background:rgba(124,58,237,.1);color:#7c3aed;border:1px solid rgba(124,58,237,.25);">MOST IMPORTANT</span>
+            <span class="branch-title" style="color:#7c3aed;">📐 Linear Algebra — Foundation of AI</span>
+            <span class="branch-desc">Neural networks = matrix operations. Images = matrices. Embeddings = vectors.</span>
+            <span class="branch-tog">▶</span>
+          </div>
+          <div class="branch-body">
+            <div class="model-grid">
+              <div class="model-card"><div class="model-name">Vectors & Matrices</div><div class="model-tags"><span class="mtag">Core</span></div><div class="model-desc">What they are, how to add, subtract, multiply. Rows × columns thinking.</div></div>
+              <div class="model-card"><div class="model-name">Matrix Multiplication</div><div class="model-tags"><span class="mtag">Dot Product</span></div><div class="model-desc">The operation that powers every neural network layer</div></div>
+              <div class="model-card"><div class="model-name">Eigenvalues & Eigenvectors</div><div class="model-tags"><span class="mtag">PCA</span><span class="mtag">Transformations</span></div><div class="model-desc">Used in PCA, dimensionality reduction, SVD</div></div>
+              <div class="model-card"><div class="model-name">Matrix Transformations</div><div class="model-tags"><span class="mtag">Scaling</span><span class="mtag">Rotation</span></div><div class="model-desc">How linear layers transform your data through space</div></div>
+            </div>
+            <div class="sec-lbl">Why it matters</div>
+            <div class="chip-row">
+              <span class="chip" style="color:#7c3aed;border-color:rgba(124,58,237,.25);background:rgba(124,58,237,.05);">Neural networks = matrix ops</span>
+              <span class="chip" style="color:#7c3aed;border-color:rgba(124,58,237,.25);background:rgba(124,58,237,.05);">Images stored as matrices</span>
+              <span class="chip" style="color:#7c3aed;border-color:rgba(124,58,237,.25);background:rgba(124,58,237,.05);">Word embeddings = vectors</span>
+              <span class="chip" style="color:#7c3aed;border-color:rgba(124,58,237,.25);background:rgba(124,58,237,.05);">PCA uses eigendecomposition</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ml-branch" style="border-color:rgba(13,122,95,.2);">
+          <div class="branch-hdr" onclick="togBranch(this)" style="background:rgba(13,122,95,.04);">
+            <span class="branch-tag" style="background:rgba(13,122,95,.1);color:var(--sup);border:1px solid rgba(13,122,95,.25);">BRAIN OF ML</span>
+            <span class="branch-title" style="color:var(--sup);">📊 Probability & Statistics</span>
+            <span class="branch-desc">How models make decisions under uncertainty</span>
+            <span class="branch-tog">▶</span>
+          </div>
+          <div class="branch-body">
+            <div class="model-grid">
+              <div class="model-card"><div class="model-name">Probability Basics</div><div class="model-tags"><span class="mtag">P(A)</span><span class="mtag">P(A|B)</span></div><div class="model-desc">Sample space, events, conditional probability, independence</div></div>
+              <div class="model-card"><div class="model-name">Bayes' Theorem</div><div class="model-tags"><span class="mtag">Prior</span><span class="mtag">Posterior</span></div><div class="model-desc">Foundation of Naive Bayes, Bayesian ML, RLHF</div></div>
+              <div class="model-card"><div class="model-name">Distributions</div><div class="model-tags"><span class="mtag">Normal</span><span class="mtag">Binomial</span></div><div class="model-desc">Normal, Binomial, Poisson, Bernoulli — how data spreads</div></div>
+              <div class="model-card"><div class="model-name">Descriptive Stats</div><div class="model-tags"><span class="mtag">Mean</span><span class="mtag">Variance</span><span class="mtag">Std</span></div><div class="model-desc">Mean, Median, Mode, Variance, Std Dev, Skewness</div></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Phase 2 -->
+      <div class="sec-lbl">Phase 2 — Learn while doing Statistics & SQL stages</div>
+      <div class="ml-tree">
+
+        <div class="ml-branch" style="border-color:rgba(26,86,196,.2);">
+          <div class="branch-hdr" onclick="togBranch(this)" style="background:rgba(26,86,196,.04);">
+            <span class="branch-tag" style="background:rgba(26,86,196,.1);color:var(--c4);border:1px solid rgba(26,86,196,.25);">LEARNING ENGINE</span>
+            <span class="branch-title" style="color:var(--c4);">📉 Calculus — How AI Learns</span>
+            <span class="branch-desc">Gradient Descent = calculus. Backpropagation = calculus.</span>
+            <span class="branch-tog">▶</span>
+          </div>
+          <div class="branch-body">
+            <div class="model-grid">
+              <div class="model-card"><div class="model-name">Derivatives</div><div class="model-tags"><span class="mtag">Rate of change</span></div><div class="model-desc">How much does output change when input changes? Core of learning.</div></div>
+              <div class="model-card"><div class="model-name">Partial Derivatives</div><div class="model-tags"><span class="mtag">Multivariable</span></div><div class="model-desc">How does loss change with respect to each weight individually?</div></div>
+              <div class="model-card"><div class="model-name">Gradients</div><div class="model-tags"><span class="mtag">Direction</span><span class="mtag">Magnitude</span></div><div class="model-desc">Vector of all partial derivatives — tells model which way to update weights</div></div>
+              <div class="model-card"><div class="model-name">Chain Rule</div><div class="model-tags"><span class="mtag">Backprop</span></div><div class="model-desc">How error flows backward through layers in a neural network</div></div>
+            </div>
+            <div class="chip-row">
+              <span class="chip dl">Gradient Descent uses derivatives</span>
+              <span class="chip dl">Backpropagation = chain rule</span>
+              <span class="chip dl">Every optimizer (Adam, SGD) = calculus</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ml-branch" style="border-color:rgba(192,65,12,.2);">
+          <div class="branch-hdr" onclick="togBranch(this)" style="background:rgba(192,65,12,.04);">
+            <span class="branch-tag" style="background:rgba(192,65,12,.1);color:var(--c6);border:1px solid rgba(192,65,12,.25);">HOW AI GETS BETTER</span>
+            <span class="branch-title" style="color:var(--c6);">📈 Optimization</span>
+            <span class="branch-desc">Training = minimizing error. Every optimizer is optimization.</span>
+            <span class="branch-tog">▶</span>
+          </div>
+          <div class="branch-body">
+            <div class="model-grid">
+              <div class="model-card"><div class="model-name">Cost / Loss Functions</div><div class="model-tags"><span class="mtag">MSE</span><span class="mtag">Cross-Entropy</span></div><div class="model-desc">What the model is trying to minimize during training</div></div>
+              <div class="model-card"><div class="model-name">Gradient Descent</div><div class="model-tags"><span class="mtag">SGD</span><span class="mtag">Mini-batch</span></div><div class="model-desc">Step in the direction of steepest descent to minimize loss</div></div>
+              <div class="model-card"><div class="model-name">Advanced Optimizers</div><div class="model-tags"><span class="mtag">Adam</span><span class="mtag">RMSProp</span></div><div class="model-desc">Adaptive learning rates, momentum — why Adam beats plain SGD</div></div>
+              <div class="model-card"><div class="model-name">Convex vs Non-Convex</div><div class="model-tags"><span class="mtag">Local minima</span><span class="mtag">Saddle</span></div><div class="model-desc">Why deep learning training is hard — stuck in local minima</div></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Phase 3 -->
+      <div class="sec-lbl">Phase 3 — Learn when you reach Deep Learning & GenAI</div>
+      <div class="ml-tree">
+
+        <div class="ml-branch" style="border-color:rgba(180,83,9,.2);">
+          <div class="branch-hdr" onclick="togBranch(this)" style="background:rgba(180,83,9,.04);">
+            <span class="branch-tag" style="background:rgba(180,83,9,.1);color:var(--c1);border:1px solid rgba(180,83,9,.25);">LOGIC + STRUCTURE</span>
+            <span class="branch-title" style="color:var(--c1);">📊 Discrete Math</span>
+            <span class="branch-desc">Algorithms, graph networks, NLP structures</span>
+            <span class="branch-tog">▶</span>
+          </div>
+          <div class="branch-body">
+            <div class="chip-row">
+              <span class="chip" style="color:var(--c1);border-color:rgba(180,83,9,.25);background:rgba(180,83,9,.05);">Logic (AND, OR, NOT)</span>
+              <span class="chip" style="color:var(--c1);border-color:rgba(180,83,9,.25);background:rgba(180,83,9,.05);">Set Theory</span>
+              <span class="chip" style="color:var(--c1);border-color:rgba(180,83,9,.25);background:rgba(180,83,9,.05);">Combinatorics</span>
+              <span class="chip" style="color:var(--c1);border-color:rgba(180,83,9,.25);background:rgba(180,83,9,.05);">Graph Theory</span>
+              <span class="chip" style="color:var(--c1);border-color:rgba(180,83,9,.25);background:rgba(180,83,9,.05);">Trees & Networks</span>
+            </div>
+            <p style="font-size:11.5px;color:var(--muted2);">Used in: decision trees, knowledge graphs, attention networks in Transformers</p>
+          </div>
+        </div>
+
+        <div class="ml-branch" style="border-color:rgba(15,118,110,.2);">
+          <div class="branch-hdr" onclick="togBranch(this)" style="background:rgba(15,118,110,.04);">
+            <span class="branch-tag" style="background:rgba(15,118,110,.1);color:var(--c8);border:1px solid rgba(15,118,110,.25);">ADVANCED + POWERFUL</span>
+            <span class="branch-title" style="color:var(--c8);">🔢 Information Theory</span>
+            <span class="branch-desc">Loss functions in DL. How GPT actually works inside.</span>
+            <span class="branch-tog">▶</span>
+          </div>
+          <div class="branch-body">
+            <div class="model-grid">
+              <div class="model-card"><div class="model-name">Entropy</div><div class="model-tags"><span class="mtag">Uncertainty</span></div><div class="model-desc">Measure of randomness / uncertainty in a distribution</div></div>
+              <div class="model-card"><div class="model-name">Cross-Entropy</div><div class="model-tags"><span class="mtag">Loss Function</span></div><div class="model-desc">The actual loss function used in classification — and in LLMs</div></div>
+              <div class="model-card"><div class="model-name">KL Divergence</div><div class="model-tags"><span class="mtag">VAE</span><span class="mtag">RLHF</span></div><div class="model-desc">Distance between two probability distributions. Used in VAEs and PPO/RLHF.</div></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- YouTube for Math -->
+      <div class="yt-section" style="margin-top:14px;">
+        <div class="yt-header"><svg viewBox="0 0 24 24" width="14" height="14" fill="#cc0000"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg> YouTube Resources — Core Math for AI</div>
+        <div class="yt-grid">
+          <a class="yt-card" href="https://youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">3Blue1Brown ⭐⭐</div><div class="yt-title">Essence of Linear Algebra — Best visual series ever made</div><div class="yt-lang">🇬🇧 English — must watch, pure clarity</div></div>
+          </a>
+          <a class="yt-card" href="https://youtube.com/playlist?list=PLZHQObOWTQDMsr9K-rj53DwVRMYO3t5Yr" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">3Blue1Brown ⭐⭐</div><div class="yt-title">Essence of Calculus — Derivatives & gradients visually</div><div class="yt-lang">🇬🇧 English — best calculus intuition</div></div>
+          </a>
+          <a class="yt-card" href="https://www.youtube.com/playlist?list=PLKnIA16_RmvbVrE0eZO2bCaFln6jaNq-1" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">CampusX (Hindi) ⭐</div><div class="yt-title">Mathematics for Machine Learning — Full series in Hindi</div><div class="yt-lang">🇮🇳 Hindi — stats, probability, linear algebra for ML</div></div>
+          </a>
+          <a class="yt-card" href="https://www.youtube.com/playlist?list=PLblh5JKOoLUK0FLuzwntyYI10UQFUhsY9" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">StatQuest with Josh Starmer ⭐</div><div class="yt-title">Statistics & Probability for ML — Bam! style clarity</div><div class="yt-lang">🇬🇧 English — best stats channel for ML people</div></div>
+          </a>
+        </div>
+      </div>
+
+      <div style="background:rgba(124,58,237,.05);border:1.5px dashed rgba(124,58,237,.25);border-radius:10px;padding:12px 14px;margin-top:12px;font-size:12px;color:#6d28d9;line-height:1.6;">
+        <strong>📌 Mentor note:</strong> Don't try to master all this math before coding. Learn Linear Algebra while doing Python. Learn Calculus while studying ML. 
+        The math will <em>click</em> when you see it working in real models. <strong>Parallel learning beats sequential.</strong>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 01 — Excel ══ -->
+<div class="stage st1" onclick="tog(this)" style="--i:2">
+  <div class="stage-num"><div class="dot">01</div><div class="spine"></div></div>
+  <div class="stage-body">
+    <div class="s-hdr">
+      <div class="s-icon">📊</div>
+      <div class="s-meta"><div class="s-title">Excel & Data Basics</div><div class="s-sub">Think like a data person first</div></div>
+      <div class="s-dur">2 wks</div><div class="tog">+</div>
+    </div>
+    <div class="s-content">
+      <div class="grid2">
+        <div class="box"><div class="blbl t">Data Concepts</div><ul><li>What is Data & Types of Data</li><li>Structured vs Unstructured</li><li>Rows, Columns, Datasets</li><li>Business thinking with data</li><li>Data Science lifecycle overview</li></ul></div>
+        <div class="box"><div class="blbl tp">Excel Skills</div><ul><li>SUM, AVERAGE, COUNT, MIN, MAX</li><li>IF, VLOOKUP, INDEX-MATCH</li><li>Text & Date functions</li><li>Pivot Tables & Pivot Charts</li><li>Conditional Formatting</li><li>Goal Seek & Data Validation</li></ul></div>
+      </div>
+      <div class="proj"><div class="proj-icon">🏁</div><div><div class="proj-title">Mini Project</div><div class="proj-desc">Sales dataset — top products, monthly trends, Pivot dashboard with charts & slicers. Export as a clean report.</div></div></div>
+      <div class="yt-section">
+        <div class="yt-header"><svg viewBox="0 0 24 24" width="14" height="14" fill="#cc0000"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg> YouTube Resources</div>
+        <div class="yt-grid">
+          <a class="yt-card" href="https://youtube.com/watch?v=PSNXoAs2ARI" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">Alex The Analyst</div><div class="yt-title">Excel for Data Analysts – Full Course</div><div class="yt-lang">🇬🇧 English</div></div>
+          </a>
+          <a class="yt-card" href="https://youtube.com/watch?v=RdTozKPY_OQ" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">Meri Seekh (Hindi)</div><div class="yt-title">Excel Complete Tutorial – Beginners to Advanced</div><div class="yt-lang">🇮🇳 Hindi</div></div>
+          </a>
+          <a class="yt-card" href="https://youtube.com/watch?v=Vl0H-qTclOg" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">freeCodeCamp</div><div class="yt-title">Microsoft Excel – Beginners Full Course</div><div class="yt-lang">🇬🇧 English</div></div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 02 — Python ══ -->
+<div class="stage st2" onclick="tog(this)">
+  <div class="stage-num"><div class="dot">02</div><div class="spine"></div></div>
+  <div class="stage-body">
+    <div class="s-hdr">
+      <div class="s-icon">🐍</div>
+      <div class="s-meta"><div class="s-title">Python Programming</div><div class="s-sub">Language of data science · Module 1 Innomatics</div></div>
+      <div class="s-dur">4 wks</div><div class="tog">+</div>
+    </div>
+    <div class="s-content">
+      <div class="grid2">
+        <div class="box"><div class="blbl tp">Core Syntax</div><ul><li>Variables, Data types, Strings, Operators</li><li>if/elif/else, while loops, for loops</li><li>List, Tuple, Set, Dictionary</li><li>Comprehensions (List, Dict)</li><li>pass, break, continue, range</li><li>Jupyter Notebook · Colab · Anaconda</li><li>Identifiers, Python Syntax basics</li></ul></div>
+        <div class="box"><div class="blbl t">Functions & Modules</div><ul><li>def, lambda, *args, **kwargs</li><li>Map, Filter, Reduce</li><li>Higher-order functions & nested functions</li><li>Namespace & scope, help(), dir()</li><li>math, random, datetime, os modules</li><li>Importing & aliasing modules</li></ul></div>
+        <div class="box"><div class="blbl a">OOP (4 Pillars)</div><ul><li>Class, Object, __init__(), self</li><li>Class, Instance & Static properties</li><li>Inheritance, Encapsulation</li><li>Polymorphism, Abstraction</li><li>Multiple dispatch & abc module</li></ul></div>
+        <div class="box"><div class="blbl l">File Handling</div><ul><li>Create, Read, Write files</li><li>try/except/finally</li><li>Custom Exceptions</li><li>with statement</li></ul></div>
+      </div>
+      <div class="proj"><div class="proj-icon">🏁</div><div><div class="proj-title">Mini Project — Student Grade Calculator</div><div class="proj-desc">Input grades, apply grade logic, store results to file, build with OOP design + exception handling.</div></div></div>
+      <div class="yt-section">
+        <div class="yt-header"><svg viewBox="0 0 24 24" width="14" height="14" fill="#cc0000"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg> YouTube Resources</div>
+        <div class="yt-grid">
+          <a class="yt-card" href="https://youtube.com/watch?v=gfDE2a7MKjA" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">CodeWithHarry</div><div class="yt-title">Python Tutorials in Hindi – Full Course</div><div class="yt-lang">🇮🇳 Hindi</div></div>
+          </a>
+          <a class="yt-card" href="https://youtube.com/watch?v=rfscVS0vtbw" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">freeCodeCamp</div><div class="yt-title">Python for Everybody – Full University Course</div><div class="yt-lang">🇬🇧 English</div></div>
+          </a>
+          <a class="yt-card" href="https://youtube.com/playlist?list=PLu0W_9lII9agwh1XjRt242xIpHhPT2llg" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">CampusX (Nitish Singh)</div><div class="yt-title">Python for Data Science – Complete Playlist</div><div class="yt-lang">🇮🇳 Hindi + English</div></div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 03 — Statistics ══ -->
+<div class="stage st3" onclick="tog(this)">
+  <div class="stage-num"><div class="dot">03</div><div class="spine"></div></div>
+  <div class="stage-body">
+    <div class="s-hdr">
+      <div class="s-icon">📐</div>
+      <div class="s-meta"><div class="s-title">Statistics</div><div class="s-sub">Module 3 Innomatics — Math behind every ML algorithm</div></div>
+      <div class="s-dur">3 wks</div><div class="tog">+</div>
+    </div>
+    <div class="s-content">
+      <div class="grid2">
+        <div class="box"><div class="blbl t">Descriptive Stats</div><ul><li>Population vs Sample, Parameter vs Statistic</li><li>Mean, Median, Mode</li><li>Variance, Std Dev, IQR, Range</li><li>Skewness & Kurtosis</li><li>Covariance & Correlation</li><li>Box Plots, Outlier detection</li></ul></div>
+        <div class="box"><div class="blbl tp">Probability Distributions</div><ul><li>Probability axioms, Conditional Probability</li><li>Discrete: Bernoulli, Binomial, Poisson (PMF)</li><li>Continuous: Normal, Standard Normal (PDF)</li><li>Z-score, Empirical Rule (68-95-99.7)</li><li>Central Limit Theorem</li></ul></div>
+        <div class="box"><div class="blbl a">Inferential Statistics</div><ul><li>Sampling: Random, Stratified, Cluster</li><li>Confidence Intervals</li><li>Hypothesis Testing (H0, H1, p-value, α)</li><li>Z-test, T-test (one & two sample)</li><li>Chi-Square Test, ANOVA, F-test</li><li>A/B Testing, Type I & II errors</li></ul></div>
+        <div class="box"><div class="blbl l">Data Gathering</div><ul><li>Data Collection techniques</li><li>Parametric vs Non-parametric tests</li><li>Test for normality</li><li>Sampling variability</li></ul></div>
+      </div>
+      <div class="proj"><div class="proj-icon">🏁</div><div><div class="proj-title">Mini Project — Exam Score Analysis</div><div class="proj-desc">Full statistics report: hypothesis test (t-test), distribution plots, confidence intervals, correlation heatmap using scipy & seaborn.</div></div></div>
+      <div class="yt-section">
+        <div class="yt-header"><svg viewBox="0 0 24 24" width="14" height="14" fill="#cc0000"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg> YouTube Resources</div>
+        <div class="yt-grid">
+          <a class="yt-card" href="https://youtube.com/@statquest" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">StatQuest – Josh Starmer</div><div class="yt-title">Statistics Fundamentals Playlist (Best on Internet)</div><div class="yt-lang">🇬🇧 English — very beginner-friendly</div></div>
+          </a>
+          <a class="yt-card" href="https://youtube.com/playlist?list=PLu0W_9lII9agCTqXDSPGUVsCLSgv2LW4U" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">CampusX (Hindi)</div><div class="yt-title">Statistics for Data Science – Complete Series</div><div class="yt-lang">🇮🇳 Hindi</div></div>
+          </a>
+          <a class="yt-card" href="https://youtube.com/playlist?list=PLZHQObOWTQDMsr9K-rj53DwVRMYO3t5Yr" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">3Blue1Brown</div><div class="yt-title">Probability & Intuition — visual maths</div><div class="yt-lang">🇬🇧 English</div></div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 04 — Python DA ══ -->
+<div class="stage st4" onclick="tog(this)">
+  <div class="stage-num"><div class="dot">04</div><div class="spine"></div></div>
+  <div class="stage-body">
+    <div class="s-hdr">
+      <div class="s-icon">🔢</div>
+      <div class="s-meta"><div class="s-title">Python for Data Analysis</div><div class="s-sub">Module 2 Innomatics — NumPy · Pandas · EDA · Visualization</div></div>
+      <div class="s-dur">4 wks</div><div class="tog">+</div>
+    </div>
+    <div class="s-content">
+      <div class="grid3">
+        <div class="box"><div class="blbl tp">NumPy</div><ul><li>Introduction to Arrays</li><li>Creation & printing of arrays</li><li>Basic ops, Math functions</li><li>Broadcasting, matrix ops</li><li>NumPy Vectorization vs Loops</li><li>NumPy with images</li><li>Descriptive stats using NumPy</li></ul></div>
+        <div class="box"><div class="blbl tp">Pandas</div><ul><li>Series & DataFrame</li><li>Data import/export (Excel, CSV, JSON)</li><li>loc, iloc, filtering, conditional slicing</li><li>GroupBy, Pivot table, Cross Tab</li><li>Merge, Join, Concatenate</li><li>Missing data: mcar/mar/mnar, imputation</li><li>String & DateTime manipulation</li><li>Window functions: rolling</li></ul></div>
+        <div class="box"><div class="blbl t">Visualization + EDA</div><ul><li>Matplotlib: Line, Bar, Pie, Histogram</li><li>Box plots, Violin, Scatter, Joint</li><li>Seaborn: Heatmap, Pairplot, Catplot</li><li>Plotly: interactive charts</li><li>EDA: Uni-variate / Bi-variate</li><li>Regular Expressions (RegEx) for text data</li></ul></div>
+      </div>
+      <div class="inno-note">📌 Innomatics Case Studies: Data Manipulation with Pandas · EDA · Data Visualization using Matplotlib & Seaborn · Web Scraping Project (data collection + EDA)</div>
+      <div class="proj"><div class="proj-icon">🏁</div><div><div class="proj-title">Project — Titanic EDA + Web Scraping</div><div class="proj-desc">Full EDA on Titanic: null handling, 10+ visualizations, correlation heatmap. Plus a web scraping project collecting raw data, structuring it, and generating insights.</div></div></div>
+      <div class="yt-section">
+        <div class="yt-header"><svg viewBox="0 0 24 24" width="14" height="14" fill="#cc0000"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg> YouTube Resources</div>
+        <div class="yt-grid">
+          <a class="yt-card" href="https://youtube.com/@codebasics" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">Codebasics</div><div class="yt-title">Pandas Tutorial – Complete Series (Hindi/English)</div><div class="yt-lang">🇮🇳 Hindi + English — industry standard</div></div>
+          </a>
+          <a class="yt-card" href="https://youtube.com/watch?v=r-uOLxNrNk8" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">freeCodeCamp</div><div class="yt-title">Data Analysis with Python – Full Course</div><div class="yt-lang">🇬🇧 English</div></div>
+          </a>
+          <a class="yt-card" href="https://youtube.com/watch?v=vmEHCJofslg" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">Keith Galli</div><div class="yt-title">Complete Python Pandas Data Science Tutorial</div><div class="yt-lang">🇬🇧 English</div></div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 05 — SQL + Power BI ══ -->
+<div class="stage st5" onclick="tog(this)">
+  <div class="stage-num"><div class="dot">05</div><div class="spine"></div></div>
+  <div class="stage-body">
+    <div class="s-hdr">
+      <div class="s-icon">🗄️</div>
+      <div class="s-meta"><div class="s-title">SQL + Power BI</div><div class="s-sub">Module 4 Innomatics — Database mastery + BI reporting</div></div>
+      <div class="s-dur">4 wks</div><div class="tog">+</div>
+    </div>
+    <div class="s-content">
+      <div class="sec-lbl">SQL — Database (MySQL)</div>
+      <div class="grid2">
+        <div class="box"><div class="blbl tp">DQL + Filtering + Clauses</div><ul><li>SELECT, WHERE, ORDER BY, LIMIT, DISTINCT</li><li>GROUP BY (Aggregate), HAVING, CASE WHEN</li><li>All JOINs: Inner, Left, Right, Self, Cross</li><li>UNION, UNION ALL, Set operations</li><li>Subqueries: Scalar, Multiple, Correlated</li><li>CTEs (Common Table Expressions)</li><li>Window functions: ROW_NUMBER, RANK, LAG, LEAD</li></ul></div>
+        <div class="box"><div class="blbl t">SQL Fundamentals + Objects</div><ul><li>DBMS vs RDBMS, SQL vs MySQL vs NoSQL</li><li>Primary key, Foreign key, Constraints</li><li>DDL (CREATE, ALTER, DROP, TRUNCATE)</li><li>DML (INSERT, UPDATE, DELETE)</li><li>TCL (COMMIT, ROLLBACK, Savepoint) · ACID</li><li>Views, Stored Procedures, Functions, Triggers</li><li>ER diagrams, Normalization 1NF–3NF</li><li>Derived tables, Indexes</li></ul></div>
+      </div>
+      <div class="sec-lbl">Power BI — Reporting Tool</div>
+      <div class="grid3">
+        <div class="box"><div class="blbl tp">Data Import + Visuals</div><ul><li>Power BI Desktop intro & workflow</li><li>Import from Web, Excel, SQL</li><li>Visualization types (categorical, trend)</li><li>KPI visuals, Tables, Matrix, Slicers</li><li>Formatting & conditional formatting</li><li>Drill-through, Drill-down</li></ul></div>
+        <div class="box"><div class="blbl t">Power Query + DAX</div><ul><li>Power Query – M Language basics</li><li>Column & row transformations</li><li>Combine & Merge queries</li><li>Data Modeling, Relationships, Cardinality</li><li>DAX: calculated columns vs measures</li><li>DAX functions: logical, text, math, agg, filter, time intelligence</li></ul></div>
+        <div class="box"><div class="blbl a">Publish + Dashboard</div><ul><li>Power BI Services, dashboard creation</li><li>Sharing dashboards (web publish)</li><li>RLS (Row Level Security)</li><li>Python Script Visuals in Power BI</li><li>Creating buttons & interactions</li></ul></div>
+      </div>
+      <div class="inno-note">Innomatics hands-on: Case Study on Clauses · Case Study on Temporary Tables · Full project on SQL + Power BI dashboard building</div>
+      <div class="proj"><div class="proj-icon">🏁</div><div><div class="proj-title">Projects — SQL + Power BI</div><div class="proj-desc">①E-commerce DB: design schema, 20 business queries (revenue, top customers, trends). ②Power BI Sales Dashboard with DAX measures, dynamic filtering, published to web.</div></div></div>
+      <div class="yt-section">
+        <div class="yt-header"><svg viewBox="0 0 24 24" width="14" height="14" fill="#cc0000"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg> YouTube Resources — SQL for DA/DS</div>
+        <div class="yt-grid">
+          <a class="yt-card" href="https://youtube.com/watch?v=HXV3zeQKqGY" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">Alex The Analyst</div><div class="yt-title">SQL for Data Analysts – Full Beginner to Advanced</div><div class="yt-lang">🇬🇧 English — best SQL DA course</div></div>
+          </a>
+          <a class="yt-card" href="https://youtube.com/@ankitbansal6" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">Ankit Bansal</div><div class="yt-title">SQL Interview Questions & Real DA Problems</div><div class="yt-lang">🇮🇳 Hindi — great for interviews</div></div>
+          </a>
+          <a class="yt-card" href="https://youtube.com/watch?v=7S_tz1z_5bA" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">Programming with Mosh</div><div class="yt-title">MySQL Tutorial – Complete Course (3 hrs)</div><div class="yt-lang">🇬🇧 English</div></div>
+          </a>
+          <a class="yt-card" href="https://youtube.com/@GuyInACube" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">Guy in a Cube</div><div class="yt-title">Power BI – Tips, DAX, Reports (best channel)</div><div class="yt-lang">🇬🇧 English</div></div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end stages temporarily -->
+
+<!-- ══ MILESTONE 1 — Data Analyst ══ -->
+<div class="milestone">
+  <div class="milestone-inner">
+    <div class="ms-badge">🏅</div>
+    <div class="ms-text">
+      <span class="ms-tag">// milestone achieved</span>
+      <div class="ms-title">Data Analyst — Junior Level</div>
+      <div class="ms-desc">Completing Stages 1–5 makes you eligible for <strong>Junior Data Analyst</strong> and <strong>Business Analyst</strong> positions. You can query databases, build dashboards, run EDA, and tell stories with data. Start applying!</div>
+      <div class="ms-skills"><span class="ms-skill">Python</span><span class="ms-skill">Pandas</span><span class="ms-skill">SQL</span><span class="ms-skill">Power BI</span><span class="ms-skill">EDA</span><span class="ms-skill">Statistics</span><span class="ms-skill">Excel</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="stages">
+
+<!-- ══ 06 — Machine Learning ══ -->
+<div class="stage st6" onclick="tog(this)">
+  <div class="stage-num"><div class="dot">06</div><div class="spine"></div></div>
+  <div class="stage-body">
+    <div class="s-hdr">
+      <div class="s-icon">🤖</div>
+      <div class="s-meta"><div class="s-title">Machine Learning</div><div class="s-sub">Module 5 Innomatics — Supervised · Unsupervised · Validation</div></div>
+      <div class="s-dur">8 wks</div><div class="tog">+</div>
+    </div>
+    <div class="s-content">
+      <div class="sec-lbl">ML Foundation</div>
+      <div class="grid2" style="margin-bottom:12px;">
+        <div class="box"><div class="blbl t">Theory</div><ul><li>AI vs ML vs DL — when to use what</li><li>Bias-Variance Tradeoff</li><li>Overfitting, Underfitting, Optimal fit</li><li>ML Workflow end-to-end (sklearn pipeline)</li><li>Data pre-processing: tabular, text, image</li></ul></div>
+        <div class="box"><div class="blbl tp">Feature Engineering</div><ul><li>Missing value imputation (ML algorithms)</li><li>Label, One-Hot, Target Encoding</li><li>Standard, MinMax, Robust Scaling</li><li>Outlier treatment, Anomaly detection</li><li>Sklearn Pipeline + model building</li></ul></div>
+      </div>
+      <div class="ml-tree">
+        <div class="ml-branch sup">
+          <div class="branch-hdr" onclick="togBranch(this)">
+            <span class="branch-tag">01</span><span class="branch-title">Supervised Learning</span>
+            <span class="branch-desc">Labelled data → predict output</span><span class="branch-tog">▶</span>
+          </div>
+          <div class="branch-body">
+            <div class="sec-lbl">Regression</div>
+            <div class="model-grid">
+              <div class="model-card"><div class="model-name">Linear Regression</div><div class="model-tags"><span class="mtag">OLS</span><span class="mtag">Gradient Descent</span></div><div class="model-desc">Best fit line, coefficients, R², MSE, RMSE. Homoscedasticity, Q-Q plot, residual analysis.</div></div>
+              <div class="model-card"><div class="model-name">Multiple Linear Regression</div><div class="model-tags"><span class="mtag">OLS Assumptions</span><span class="mtag">Multicollinearity</span></div><div class="model-desc">Multiple features, feature selection, gradient descent</div></div>
+              <div class="model-card"><div class="model-name">Polynomial Regression</div><div class="model-tags"><span class="mtag">Degree</span><span class="mtag">Curve Fit</span></div><div class="model-desc">Non-linear relationships, degree tuning, metrics evaluation</div></div>
+              <div class="model-card"><div class="model-name">Ridge (L2) · Lasso (L1) · ElasticNet</div><div class="model-tags"><span class="mtag">Regularization</span></div><div class="model-desc">Reduce overfitting. Lasso = feature selection. ElasticNet = L1+L2.</div></div>
+            </div>
+            <div class="sec-lbl">Classification</div>
+            <div class="model-grid">
+              <div class="model-card"><div class="model-name">Naive Bayes</div><div class="model-tags"><span class="mtag">Bayes Theorem</span><span class="mtag">Probability</span></div><div class="model-desc">Multinomial, Bernoulli, Gaussian, Categorical NB variants</div></div>
+              <div class="model-card"><div class="model-name">K-Nearest Neighbors</div><div class="model-tags"><span class="mtag">Distance</span><span class="mtag">Lazy Learner</span></div><div class="model-desc">Ball tree, kd tree, curse of dimensionality, KNN tuning</div></div>
+              <div class="model-card"><div class="model-name">Decision Tree</div><div class="model-tags"><span class="mtag">Gini</span><span class="mtag">Entropy</span><span class="mtag">IG</span></div><div class="model-desc">Classification & Regression tree, pruning, stopping criteria</div></div>
+              <div class="model-card"><div class="model-name">Logistic Regression</div><div class="model-tags"><span class="mtag">Sigmoid</span><span class="mtag">Log-odds</span></div><div class="model-desc">Binary & multiclass, ROC-AUC, precision-recall, F1, threshold</div></div>
+              <div class="model-card"><div class="model-name">Support Vector Machine</div><div class="model-tags"><span class="mtag">Hyperplane</span><span class="mtag">Kernel Trick</span></div><div class="model-desc">Hard/soft margin, RBF, Poly kernels, Gamma, Cost, Epsilon</div></div>
+              <div class="model-card"><div class="model-name">Random Forest</div><div class="model-tags"><span class="mtag">Bagging</span><span class="mtag">Ensemble</span></div><div class="model-desc">Many trees vote, feature importance, variable selection</div></div>
+              <div class="model-card"><div class="model-name">AdaBoost · Gradient Boosting · XGBoost</div><div class="model-tags"><span class="mtag">Boosting</span><span class="mtag">Sequential</span></div><div class="model-desc">Series ensemblers. XGBoost = industry standard. Hyper param tuning.</div></div>
+            </div>
+            <div class="sec-lbl">Validation & Tuning</div>
+            <div class="chip-row">
+              <span class="chip sup">Cross-Validation (k-Fold)</span><span class="chip sup">Leave-One-Out CV</span>
+              <span class="chip sup">GridSearchCV</span><span class="chip sup">RandomizedSearchCV</span>
+              <span class="chip sup">Confusion Matrix</span><span class="chip sup">ROC-AUC</span>
+              <span class="chip sup">Precision · Recall · F1</span><span class="chip sup">Bias-Variance Tradeoff</span>
+            </div>
+          </div>
+        </div>
+        <div class="ml-branch unsup">
+          <div class="branch-hdr" onclick="togBranch(this)">
+            <span class="branch-tag">02</span><span class="branch-title">Unsupervised Learning</span>
+            <span class="branch-desc">No labels — find hidden structure</span><span class="branch-tog">▶</span>
+          </div>
+          <div class="branch-body">
+            <div class="model-grid">
+              <div class="model-card"><div class="model-name">K-Means Clustering</div><div class="model-tags"><span class="mtag">Centroids</span><span class="mtag">Elbow</span></div><div class="model-desc">Optimal k via Elbow Method, Silhouette score, linkage methods</div></div>
+              <div class="model-card"><div class="model-name">Hierarchical Clustering</div><div class="model-tags"><span class="mtag">Divisive</span><span class="mtag">Agglomerative</span></div><div class="model-desc">Dendrograms, practical issues in clustering</div></div>
+              <div class="model-card"><div class="model-name">PCA & t-SNE</div><div class="model-tags"><span class="mtag">Dim Reduction</span></div><div class="model-desc">Eigenvalues, eigenvectors, 2D/3D PCA, t-SNE embedding</div></div>
+            </div>
+            <div class="sec-lbl">Deployment</div>
+            <div class="chip-row">
+              <span class="chip unsup">Streamlit ML App</span><span class="chip unsup">Pickle model</span>
+              <span class="chip unsup">RASA Chatbot (case study)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="inno-note">Innomatics Projects: Chatbot with RASA · Classification project (EDA + 5 algorithms) · Ensemble Methods project · ML App using Streamlit</div>
+      <div class="proj"><div class="proj-icon">🏁</div><div><div class="proj-title">Capstone — End-to-End ML Project</div><div class="proj-desc">Pick a real dataset. Full pipeline: EDA → preprocessing → 5+ models → hyperparameter tuning → evaluation → Streamlit deployment.</div></div></div>
+      <div class="yt-section">
+        <div class="yt-header"><svg viewBox="0 0 24 24" width="14" height="14" fill="#cc0000"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg> YouTube Resources — ML</div>
+        <div class="yt-grid">
+          <a class="yt-card" href="https://youtube.com/@campusx-official" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">CampusX — Nitish Singh ⭐</div><div class="yt-title">100 Days of ML – Best Hindi ML Course</div><div class="yt-lang">🇮🇳 Hindi — algorithm-by-algorithm, very deep</div></div>
+          </a>
+          <a class="yt-card" href="https://youtube.com/playlist?list=PLoROMvodv4rMiGQp3WXShtMGgzqpfVfbU" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">Stanford Online ⭐</div><div class="yt-title">CS229 – Machine Learning (Andrew Ng)</div><div class="yt-lang">🇬🇧 English — mathematical depth</div></div>
+          </a>
+          <a class="yt-card" href="https://youtube.com/@statquest" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">StatQuest – Josh Starmer</div><div class="yt-title">ML Algorithm Explanations (intuitive + visual)</div><div class="yt-lang">🇬🇧 English — best for understanding WHY</div></div>
+          </a>
+          <a class="yt-card" href="https://youtube.com/@krishnaik06" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">Krish Naik</div><div class="yt-title">Complete ML Playlist (hands-on code)</div><div class="yt-lang">🇮🇳 Hindi + English</div></div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- ══ MILESTONE 2 — Data Scientist ══ -->
+<div class="milestone">
+  <div class="milestone-inner" style="background:linear-gradient(135deg,#f0fdf4 0%,#dcfce7 100%);border-color:rgba(13,122,95,.2);box-shadow:0 4px 20px rgba(13,122,95,.1);">
+    <div class="ms-badge" style="background:var(--c2);box-shadow:0 4px 14px rgba(13,122,95,.3);">📊</div>
+    <div class="ms-text">
+      <span class="ms-tag" style="color:var(--c2);">// milestone achieved</span>
+      <div class="ms-title">Data Scientist — Eligible</div>
+      <div class="ms-desc">Completing Stages 1–6 qualifies you for <strong>Data Scientist</strong> roles. You can build end-to-end ML pipelines, work with real datasets, and deploy models. This is a huge deal — most companies start here!</div>
+      <div class="ms-skills" style="--c4:var(--c2);">
+        <span class="ms-skill" style="background:rgba(13,122,95,.08);border-color:rgba(13,122,95,.2);color:var(--c2);">ML Algorithms</span>
+        <span class="ms-skill" style="background:rgba(13,122,95,.08);border-color:rgba(13,122,95,.2);color:var(--c2);">Feature Engineering</span>
+        <span class="ms-skill" style="background:rgba(13,122,95,.08);border-color:rgba(13,122,95,.2);color:var(--c2);">Model Evaluation</span>
+        <span class="ms-skill" style="background:rgba(13,122,95,.08);border-color:rgba(13,122,95,.2);color:var(--c2);">Streamlit Deploy</span>
+        <span class="ms-skill" style="background:rgba(13,122,95,.08);border-color:rgba(13,122,95,.2);color:var(--c2);">EDA + Stats</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="stages">
+
+<!-- ══ 07 — Deep Learning ══ -->
+<div class="stage st7" onclick="tog(this)">
+  <div class="stage-num"><div class="dot">07</div><div class="spine"></div></div>
+  <div class="stage-body">
+    <div class="s-hdr">
+      <div class="s-icon">🧠</div>
+      <div class="s-meta"><div class="s-title">Deep Learning</div><div class="s-sub">Module 6 Innomatics — Neural Nets · TensorFlow · Keras</div></div>
+      <div class="s-dur">5 wks</div><div class="tog">+</div>
+    </div>
+    <div class="s-content">
+      <div class="grid2">
+        <div class="box"><div class="blbl t">DL Fundamentals</div><ul><li>AI vs ML vs DL — when to use DL</li><li>History of Deep Learning</li><li>Biological Neuron → Artificial Neuron</li><li>MLP Architecture (Forward Propagation)</li><li>Backpropagation (chain rule)</li><li>Bias-Variance Tradeoff in MLP</li></ul></div>
+        <div class="box"><div class="blbl tp">Activation Functions</div><ul><li>Sigmoid — vanishing gradient problem</li><li>Tanh — zero-centered</li><li>ReLU & Variants: Leaky ReLU, ELU, SELU</li><li>Why deep networks fail without ReLU</li><li>Exploding Gradient Problem</li></ul></div>
+        <div class="box"><div class="blbl a">Optimizers</div><ul><li>SGD with Momentum</li><li>RMSprop, AdaGrad, AdaDelta</li><li>Adam (most used), NAdam</li><li>Convex vs Non-convex functions, Saddle Point</li></ul></div>
+        <div class="box"><div class="blbl l">Regularization + Tuning</div><ul><li>Dropout layers</li><li>Batch Normalization</li><li>Weight Initialization techniques</li><li>Early Stopping</li><li>TensorBoard for visualization</li><li>Tensorflow basic syntax & Graphs</li></ul></div>
+      </div>
+      <div class="sec-lbl">Keras Hands-on (TensorFlow Backend)</div>
+      <div class="chip-row">
+        <span class="chip dl">Sequential API</span><span class="chip dl">Functional API</span>
+        <span class="chip dl">Model Compile + Fit</span><span class="chip dl">Callbacks</span>
+        <span class="chip dl">Classification with MLP</span><span class="chip dl">Regression with MLP</span>
+        <span class="chip dl">Google Colab setup</span>
+      </div>
+      <div class="inno-note">Innomatics Projects: Classification & Regression using Keras MLP. Module ends with a full deep learning project.</div>
+      <div class="proj"><div class="proj-icon">🏁</div><div><div class="proj-title">Projects — Neural Network</div><div class="proj-desc">①ANN for tabular classification (churn prediction). ②Regression with MLP. Compare with sklearn models — when does DL win?</div></div></div>
+      <div class="yt-section">
+        <div class="yt-header"><svg viewBox="0 0 24 24" width="14" height="14" fill="#cc0000"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg> YouTube Resources — Deep Learning</div>
+        <div class="yt-grid">
+          <a class="yt-card" href="https://youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">3Blue1Brown ⭐</div><div class="yt-title">Neural Networks – Visual + Intuitive (4-part series)</div><div class="yt-lang">🇬🇧 English — MUST watch before coding</div></div>
+          </a>
+          <a class="yt-card" href="https://youtube.com/@campusx-official" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">CampusX — Nitish Singh ⭐</div><div class="yt-title">Deep Learning Series – ANN, Backprop, TF/Keras</div><div class="yt-lang">🇮🇳 Hindi — best Hindi DL course</div></div>
+          </a>
+          <a class="yt-card" href="https://youtube.com/@Deeplearningai" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">DeepLearning.AI (Andrew Ng)</div><div class="yt-title">Deep Learning Specialization – Full Content</div><div class="yt-lang">🇬🇧 English — gold standard course</div></div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 08 — Computer Vision ══ -->
+<div class="stage st8" onclick="tog(this)">
+  <div class="stage-num"><div class="dot">08</div><div class="spine"></div></div>
+  <div class="stage-body">
+    <div class="s-hdr">
+      <div class="s-icon">👁️</div>
+      <div class="s-meta"><div class="s-title">CNN & Computer Vision</div><div class="s-sub">Module 7 Innomatics — OpenCV · CNN · YOLO · Transfer Learning</div></div>
+      <div class="s-dur">4 wks</div><div class="tog">+</div>
+    </div>
+    <div class="s-content">
+      <div class="grid2">
+        <div class="box"><div class="blbl tp">OpenCV — Image Processing</div><ul><li>How images are stored in machines (pixels, channels)</li><li>Color Spaces (RGB, BGR, HSV, Grayscale)</li><li>Read, write, save images & videos</li><li>Web camera capture</li><li>Drawing on images/videos</li><li>Affine & Non-Affine Transformation</li><li>Histograms for images</li><li>Object detection basics with OpenCV</li></ul></div>
+        <div class="box"><div class="blbl t">CNN Architecture</div><ul><li>Why CNN over MLP for images?</li><li>How Convolution works (filters, feature maps)</li><li>Padding, Stride, Pooling (Max, Avg)</li><li>LeNet5, AlexNet, VGG16, VGG19</li><li>InceptionNet, ResNet, Xception</li><li>MobileNet, EfficientNet</li><li>Pre-trained Model Introduction</li></ul></div>
+      </div>
+      <div class="sec-lbl">Transfer Learning + Object Detection</div>
+      <div class="grid2">
+        <div class="box"><div class="blbl a">Transfer Learning</div><ul><li>When & Why to use Transfer Learning</li><li>Fine-tuning pretrained models</li><li>Hyperparameter Tuning (Random Search, Hyperband, Bayesian)</li><li>Case Studies: Plant Disease, CIFAR, Face Mask</li></ul></div>
+        <div class="box"><div class="blbl l">Object Detection (YOLO)</div><ul><li>R-CNN, Fast R-CNN, Faster R-CNN</li><li>YOLO Algorithm (how it works)</li><li>YOLO V7 / V8 with Ultralytics</li><li>Case Study: Helmet Detection using YOLO</li><li>Bone Fracture Multi-region Detection</li></ul></div>
+      </div>
+      <div class="proj"><div class="proj-icon">🏁</div><div><div class="proj-title">Projects — Computer Vision</div><div class="proj-desc">①Face Mask Detector (CNN). ②Custom Object Detector with YOLOv8. ③Plant Disease Classifier with Transfer Learning (ResNet).</div></div></div>
+      <div class="yt-section">
+        <div class="yt-header"><svg viewBox="0 0 24 24" width="14" height="14" fill="#cc0000"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg> YouTube Resources — CV</div>
+        <div class="yt-grid">
+          <a class="yt-card" href="https://youtube.com/watch?v=oXlwWbU8l2o" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">freeCodeCamp</div><div class="yt-title">OpenCV Python Course – Full Beginner Course</div><div class="yt-lang">🇬🇧 English</div></div>
+          </a>
+          <a class="yt-card" href="https://youtube.com/@murtazasworkshop" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">Murtaza's Workshop</div><div class="yt-title">Computer Vision Projects – YOLO + OpenCV hands-on</div><div class="yt-lang">🇬🇧 English — best for CV projects</div></div>
+          </a>
+          <a class="yt-card" href="https://youtube.com/@campusx-official" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">CampusX (Hindi)</div><div class="yt-title">CNN & Computer Vision Playlist</div><div class="yt-lang">🇮🇳 Hindi</div></div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- ══ MILESTONE 3 — ML Engineer ══ -->
+<div class="milestone">
+  <div class="milestone-inner" style="background:linear-gradient(135deg,#fff7ed 0%,#fed7aa 40%,#fff7ed 100%);border-color:rgba(194,65,12,.2);box-shadow:0 4px 20px rgba(194,65,12,.1);">
+    <div class="ms-badge" style="background:var(--c6);box-shadow:0 4px 14px rgba(194,65,12,.3);">🤖</div>
+    <div class="ms-text">
+      <span class="ms-tag" style="color:var(--c6);">// milestone achieved</span>
+      <div class="ms-title">ML Engineer / Computer Vision Engineer</div>
+      <div class="ms-desc">After Stages 7 & 8 you are ready for <strong>ML Engineer</strong>, <strong>CV Engineer</strong>, and <strong>Deep Learning Engineer</strong> roles. You can build neural networks, train CNNs, and deploy real-time vision applications.</div>
+      <div class="ms-skills">
+        <span class="ms-skill" style="background:rgba(194,65,12,.08);border-color:rgba(194,65,12,.2);color:var(--c6);">Deep Learning</span>
+        <span class="ms-skill" style="background:rgba(194,65,12,.08);border-color:rgba(194,65,12,.2);color:var(--c6);">TensorFlow/Keras</span>
+        <span class="ms-skill" style="background:rgba(194,65,12,.08);border-color:rgba(194,65,12,.2);color:var(--c6);">OpenCV</span>
+        <span class="ms-skill" style="background:rgba(194,65,12,.08);border-color:rgba(194,65,12,.2);color:var(--c6);">YOLO</span>
+        <span class="ms-skill" style="background:rgba(194,65,12,.08);border-color:rgba(194,65,12,.2);color:var(--c6);">Transfer Learning</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="stages">
+
+<!-- ══ 09 — NLP ══ -->
+<div class="stage st9" onclick="tog(this)">
+  <div class="stage-num"><div class="dot">09</div><div class="spine"></div></div>
+  <div class="stage-body">
+    <div class="s-hdr">
+      <div class="s-icon">💬</div>
+      <div class="s-meta"><div class="s-title">Natural Language Processing</div><div class="s-sub">Module 8 Innomatics — Classical · RNN/LSTM · Transformers · BERT</div></div>
+      <div class="s-dur">4 wks</div><div class="tog">+</div>
+    </div>
+    <div class="s-content">
+      <div class="sec-lbl">Text Preprocessing</div>
+      <div class="chip-row">
+        <span class="chip nlp">Tokenization</span><span class="chip nlp">Stop Word Removal</span>
+        <span class="chip nlp">Stemming</span><span class="chip nlp">Lemmatization</span>
+        <span class="chip nlp">Special Characters</span><span class="chip nlp">Regex Cleaning</span>
+        <span class="chip nlp">nltk · spacy</span>
+      </div>
+      <div class="ml-tree">
+        <div class="ml-branch" style="border-color:rgba(55,48,163,.2);">
+          <div class="branch-hdr" onclick="togBranch(this)" style="background:rgba(55,48,163,.03);">
+            <span class="branch-tag" style="background:rgba(55,48,163,.1);color:var(--c9);border:1px solid rgba(55,48,163,.2);">01</span>
+            <span class="branch-title" style="color:var(--c9);">Classical NLP — Vectorization</span>
+            <span class="branch-desc">Statistical text representation</span><span class="branch-tog">▶</span>
+          </div>
+          <div class="branch-body">
+            <div class="model-grid">
+              <div class="model-card"><div class="model-name">Bag of Words</div><div class="model-tags"><span class="mtag">Count-based</span></div><div class="model-desc">Word frequency matrix, ignores order</div></div>
+              <div class="model-card"><div class="model-name">TF-IDF</div><div class="model-tags"><span class="mtag">Term Freq</span></div><div class="model-desc">Weights rare important words higher</div></div>
+              <div class="model-card"><div class="model-name">Word2Vec (CBOW + Skip-Gram)</div><div class="model-tags"><span class="mtag">Dense vectors</span></div><div class="model-desc">Semantic meaning captured in dense vector space</div></div>
+              <div class="model-card"><div class="model-name">GloVe + FastText</div><div class="model-tags"><span class="mtag">Pretrained</span><span class="mtag">Subword</span></div><div class="model-desc">GloVe: co-occurrence matrix. FastText: handles OOV words.</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="ml-branch" style="border-color:rgba(55,48,163,.2);">
+          <div class="branch-hdr" onclick="togBranch(this)" style="background:rgba(55,48,163,.03);">
+            <span class="branch-tag" style="background:rgba(55,48,163,.1);color:var(--c9);border:1px solid rgba(55,48,163,.2);">02</span>
+            <span class="branch-title" style="color:var(--c9);">Sequential Models — RNN / LSTM</span>
+            <span class="branch-desc">Models that process sequences</span><span class="branch-tog">▶</span>
+          </div>
+          <div class="branch-body">
+            <div class="model-grid">
+              <div class="model-card"><div class="model-name">RNN</div><div class="model-tags"><span class="mtag">Recurrent</span></div><div class="model-desc">Hidden state carries context. Suffers from vanishing gradient.</div></div>
+              <div class="model-card"><div class="model-name">LSTM</div><div class="model-tags"><span class="mtag">Forget/Input/Output Gates</span></div><div class="model-desc">Solves vanishing gradient. Long-term memory retention.</div></div>
+              <div class="model-card"><div class="model-name">GRU</div><div class="model-tags"><span class="mtag">Gated</span><span class="mtag">Faster</span></div><div class="model-desc">Simplified LSTM with reset & update gates</div></div>
+              <div class="model-card"><div class="model-name">Bidirectional RNN</div><div class="model-tags"><span class="mtag">Both directions</span></div><div class="model-desc">Reads sequence left→right AND right→left</div></div>
+              <div class="model-card"><div class="model-name">Auto Encoders</div><div class="model-tags"><span class="mtag">Encoder-Decoder</span></div><div class="model-desc">Image compression, reconstruction (MNIST case study)</div></div>
+              <div class="model-card"><div class="model-name">Attention Mechanism</div><div class="model-tags"><span class="mtag">Context vector</span></div><div class="model-desc">Dynamically focus on relevant input tokens</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="ml-branch" style="border-color:rgba(55,48,163,.2);">
+          <div class="branch-hdr" onclick="togBranch(this)" style="background:rgba(55,48,163,.03);">
+            <span class="branch-tag" style="background:rgba(55,48,163,.1);color:var(--c9);border:1px solid rgba(55,48,163,.2);">03</span>
+            <span class="branch-title" style="color:var(--c9);">Transformers & BERT</span>
+            <span class="branch-desc">The architecture powering all modern LLMs</span><span class="branch-tog">▶</span>
+          </div>
+          <div class="branch-body">
+            <div class="model-grid">
+              <div class="model-card"><div class="model-name">Transformer Architecture</div><div class="model-tags"><span class="mtag">Self-Attention</span><span class="mtag">Multi-Head</span></div><div class="model-desc">How Transformers work. Positional encoding, encoder-decoder stacks.</div></div>
+              <div class="model-card"><div class="model-name">BERT</div><div class="model-tags"><span class="mtag">Bidirectional</span><span class="mtag">Encoder</span></div><div class="model-desc">Masked LM pretraining. Fine-tune with HuggingFace for classification, NER, QA</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="proj"><div class="proj-icon">🏁</div><div><div class="proj-title">Project — Sentiment Analysis Comparison</div><div class="proj-desc">Classical ML vs LSTM vs BERT on product reviews. Full metrics comparison. NER + POS Tagging case study. Text classification with Word2Vec/GloVe/FastText.</div></div></div>
+      <div class="yt-section">
+        <div class="yt-header"><svg viewBox="0 0 24 24" width="14" height="14" fill="#cc0000"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg> YouTube Resources — NLP</div>
+        <div class="yt-grid">
+          <a class="yt-card" href="https://youtube.com/@campusx-official" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">CampusX — Nitish Singh ⭐</div><div class="yt-title">NLP Series – Tokenization to BERT (Hindi)</div><div class="yt-lang">🇮🇳 Hindi — best Hindi NLP deep-dive</div></div>
+          </a>
+          <a class="yt-card" href="https://youtube.com/watch?v=X2vAabgKiuM" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">freeCodeCamp</div><div class="yt-title">NLP with Python – Full Course</div><div class="yt-lang">🇬🇧 English</div></div>
+          </a>
+          <a class="yt-card" href="https://youtube.com/watch?v=U0s0f995w14" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">Stanford / Andrej Karpathy</div><div class="yt-title">Attention Is All You Need – explained visually</div><div class="yt-lang">🇬🇧 English — for transformers</div></div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 10 — GenAI ══ -->
+<div class="stage st10" onclick="tog(this)">
+  <div class="stage-num"><div class="dot">10</div><div class="spine"></div></div>
+  <div class="stage-body">
+    <div class="s-hdr">
+      <div class="s-icon">✨</div>
+      <div class="s-meta"><div class="s-title">Generative AI & LLMs</div><div class="s-sub">Module 9 Innomatics — OpenAI · Gemini · LLaMA · LangChain · RAG</div></div>
+      <div class="s-dur">4 wks</div><div class="tog">+</div>
+    </div>
+    <div class="s-content">
+      <div class="grid3">
+        <div class="box"><div class="blbl t">Gen AI Concepts</div><ul><li>Introduction to Generative AI</li><li>Discriminative vs Generative models</li><li>Overview of GenAI technologies</li><li>VAE, GANs, Diffusion (concepts)</li><li>Applications across industries</li></ul></div>
+        <div class="box"><div class="blbl tp">LLMs</div><ul><li>History of NLP → LLMs</li><li>What is a Large Language Model?</li><li>Types of LLMs (encoder, decoder, both)</li><li>Tokens, context window, temperature</li><li>How LLMs are trained (pretraining, RLHF)</li></ul></div>
+        <div class="box"><div class="blbl a">Prompt Engineering</div><ul><li>Intro to Prompt Engineering</li><li>Zero-shot, Few-shot prompting</li><li>Chain-of-Thought (CoT)</li><li>System prompts, structured output</li><li>GPT-3, GPT-4 practical exercises</li></ul></div>
+      </div>
+      <div class="sec-lbl">APIs & Models Hands-on</div>
+      <div class="grid2">
+        <div class="box"><div class="blbl tp">OpenAI + Gemini</div><ul><li>OpenAI API setup & authentication</li><li>GPT-3/4 for text generation</li><li>DALL-E for image generation from text</li><li>Gemini API – accessing different models</li><li>Step-by-step: AI chatbot with Gemini</li></ul></div>
+        <div class="box"><div class="blbl t">LLaMA (Open Source)</div><ul><li>Introduction to LLaMA (Meta)</li><li>Model variants: 8B, 13B, 30B, 70B parameters</li><li>LLaMA vs GPT-3/4 comparison</li><li>Running LLaMA locally / on cloud</li><li>Text generation with LLaMA</li></ul></div>
+      </div>
+      <div class="sec-lbl">LangChain + RAG Pipeline</div>
+      <div class="grid2">
+        <div class="box"><div class="blbl a">LangChain Framework</div><ul><li>Core components: Chains, Memory, Prompt Templates</li><li>Document loaders & text splitters</li><li>Tool use & Function calling</li><li>Building real-world apps step-by-step</li><li>Case study: Project with LangChain</li></ul></div>
+        <div class="box"><div class="blbl l">RAG Pipeline</div><ul><li>Embeddings & semantic search</li><li>Vector DBs: FAISS, ChromaDB, Qdrant</li><li>Chunking → Embed → Store → Retrieve → Generate</li><li>HuggingFace sentence-transformers</li></ul></div>
+      </div>
+      <div class="inno-note">Innomatics Projects: LLM project · OpenAI image generation project · Chatbot with Gemini · LLaMA text generation · Full LangChain app</div>
+      <div class="proj"><div class="proj-icon">🏁</div><div><div class="proj-title">Final Capstone Projects</div><div class="proj-desc">① PDF Chatbot with RAG + LangChain (HuggingFace + ChromaDB). ② AI Assistant using OpenAI/Gemini API with memory. ③ DALL-E Image Generator from text descriptions.</div></div></div>
+      <div class="yt-section">
+        <div class="yt-header"><svg viewBox="0 0 24 24" width="14" height="14" fill="#cc0000"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg> YouTube Resources — GenAI</div>
+        <div class="yt-grid">
+          <a class="yt-card" href="https://youtube.com/@AndrejKarpathy" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">Andrej Karpathy ⭐⭐</div><div class="yt-title">Let's Build GPT from Scratch + Neural Nets series</div><div class="yt-lang">🇬🇧 English — deepest LLM understanding</div></div>
+          </a>
+          <a class="yt-card" href="https://youtube.com/watch?v=mEsleV16qdo" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">freeCodeCamp</div><div class="yt-title">Generative AI Full Course – LLM, RAG, LangChain</div><div class="yt-lang">🇬🇧 English</div></div>
+          </a>
+          <a class="yt-card" href="https://youtube.com/@campusx-official" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">CampusX (Hindi)</div><div class="yt-title">GenAI & LLM Series – LangChain, RAG, Gemini</div><div class="yt-lang">🇮🇳 Hindi — practical & in-depth</div></div>
+          </a>
+          <a class="yt-card" href="https://youtube.com/@krishnaik06" target="_blank">
+            <div class="yt-thumb"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8A3 3 0 0 0 2.6 20c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+            <div class="yt-info"><div class="yt-channel">Krish Naik</div><div class="yt-title">LangChain, RAG, OpenAI Projects – Practical GenAI</div><div class="yt-lang">🇮🇳 Hindi + English — lots of projects</div></div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end stages -->
+
+<!-- ══ MILESTONE 4 — GenAI Engineer ══ -->
+<div class="milestone">
+  <div class="milestone-inner" style="background:linear-gradient(135deg,#f0fdf4 0%,#bbf7d0 40%,#f0f9ff 100%);border-color:rgba(22,101,52,.25);box-shadow:0 6px 30px rgba(22,101,52,.15);">
+    <div class="ms-badge" style="background:var(--c11);box-shadow:0 4px 18px rgba(22,101,52,.35);font-size:26px;">🚀</div>
+    <div class="ms-text">
+      <span class="ms-tag" style="color:var(--c11);">// full journey complete</span>
+      <div class="ms-title" style="font-size:22px;">GenAI Engineer / AI Engineer 🎓</div>
+      <div class="ms-desc">You have completed the <strong>full Data Science → GenAI roadmap</strong> — aligned with the Innomatics Research Labs 9-module program. You can now apply for <strong>GenAI Engineer</strong>, <strong>AI Engineer</strong>, <strong>LLM Developer</strong>, and <strong>ML Engineer</strong> roles confidently. Build your portfolio with 3–5 strong projects and start applying!</div>
+      <div class="ms-skills">
+        <span class="ms-skill" style="background:rgba(22,101,52,.08);border-color:rgba(22,101,52,.2);color:var(--c11);">All ML Algorithms</span>
+        <span class="ms-skill" style="background:rgba(22,101,52,.08);border-color:rgba(22,101,52,.2);color:var(--c11);">Deep Learning</span>
+        <span class="ms-skill" style="background:rgba(22,101,52,.08);border-color:rgba(22,101,52,.2);color:var(--c11);">NLP + BERT</span>
+        <span class="ms-skill" style="background:rgba(22,101,52,.08);border-color:rgba(22,101,52,.2);color:var(--c11);">LLM APIs</span>
+        <span class="ms-skill" style="background:rgba(22,101,52,.08);border-color:rgba(22,101,52,.2);color:var(--c11);">RAG + LangChain</span>
+        <span class="ms-skill" style="background:rgba(22,101,52,.08);border-color:rgba(22,101,52,.2);color:var(--c11);">GenAI Apps</span>
+        <span class="ms-skill" style="background:rgba(22,101,52,.08);border-color:rgba(22,101,52,.2);color:var(--c11);">SQL + Power BI</span>
+        <span class="ms-skill" style="background:rgba(22,101,52,.08);border-color:rgba(22,101,52,.2);color:var(--c11);">Computer Vision</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM -->
+<div class="btm">
+  <h3>🛠️ Tools You'll Master</h3>
+  <p>Every tool introduced at exactly the right stage — nothing taught in isolation. Follow the Innomatics 9-module sequence.</p>
+  <div class="tools">
+    <div class="ttag">Excel</div><div class="ttag">Python</div><div class="ttag">Jupyter</div>
+    <div class="ttag">NumPy</div><div class="ttag">Pandas</div><div class="ttag">Matplotlib</div>
+    <div class="ttag">Seaborn</div><div class="ttag">Plotly</div><div class="ttag">MySQL</div>
+    <div class="ttag">Power BI (DAX)</div><div class="ttag">Scikit-learn</div><div class="ttag">XGBoost</div>
+    <div class="ttag">LightGBM</div><div class="ttag">Streamlit</div><div class="ttag">TensorFlow</div>
+    <div class="ttag">Keras</div><div class="ttag">OpenCV</div><div class="ttag">YOLO v8</div>
+    <div class="ttag">NLTK</div><div class="ttag">spaCy</div><div class="ttag">HuggingFace</div>
+    <div class="ttag">OpenAI API</div><div class="ttag">Gemini API</div><div class="ttag">LLaMA 3</div>
+    <div class="ttag">LangChain</div><div class="ttag">ChromaDB</div><div class="ttag">FAISS</div>
+    <div class="ttag">Gradio</div><div class="ttag">Flask</div><div class="ttag">Git & GitHub</div>
+    <div class="ttag">RegEx</div><div class="ttag">RegEx</div><div class="ttag">Google Colab</div>
+  </div>
+  <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border);font-size:12.5px;color:var(--muted);line-height:1.8;">
+    <strong style="color:var(--text);">📌 Remember from your mentor:</strong><br>
+    Don't just watch videos — <strong>code every example</strong>. Build projects at every milestone. 
+    Connect on LinkedIn and document your journey. Innomatics gives you guaranteed internship (2–3 months) + 100% job assistance + 500+ hiring partners. 
+    You've got this! 💪
+  </div>
+</div>
+
+</div><!-- wrap -->
+
+<script>
+function tog(el){
+  el.classList.toggle('open');
+}
+function togBranch(hdr){
+  event.stopPropagation();
+  hdr.classList.toggle('open');
+}
+</script>
+</body>
+</html>
